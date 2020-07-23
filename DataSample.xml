@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ROOT>
+    <Identification>
+        <id>1</id>
+        <name>"Foo"</name>
+    </Identification>
+    <Tags>
+        <tag1>"Bar"</tag1>
+        <tag2>"Eek"</tag2>
+    </Tags>
+    <Stock>
+        <warehouse>300</warehouse>
+        <retail>20</retail>
+        <unitprice>101.50</unitprice>
+    </Stock>
+</ROOT>

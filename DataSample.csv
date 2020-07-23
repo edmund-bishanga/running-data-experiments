@@ -1,0 +1,8 @@
+Index,SectionName,key,value
+1,"Identification","id",1
+2,"Identification","name","Foo"
+3,"Tags","tag1","Bar"
+4,"Tags","tag2","Eek"
+5,"Stock","warehouse",300
+6,"Stock","retial",20
+7,"UnitPrice","shoes",101.50
