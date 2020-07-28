@@ -1,5 +1,7 @@
 #!usr/bin/python
 
+import json
+import parser
 # exploring various statistical information keys from my running data
 # average pace
 # total mileage
