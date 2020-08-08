@@ -1,57 +1,57 @@
-venue,date (dd/mm/yyyy),distance (miles),time (hh:mm:ss),season (Wi|Sp|Su|Fa),terrain (Road|XC|Mixed)
-pocket parkrun,14/03/2020,3.1,00:18:57,Sp,Mixed
-pocket parkrun,07/03/2020,3.1,00:23:50,Sp,Mixed
-pocket parkrun,29/02/2020,3.1,00:21:49,Wi,Mixed
-pocket parkrun,22/02/2020,3.1,00:20:43,Wi,Mixed
-pocket parkrun,15/02/2020,3.1,00:20:39,Wi,Mixed
-pocket parkrun,25/01/2020,3.1,00:23:02,Wi,Mixed
-pocket parkrun,11/01/2020,3.1,00:22:54,Wi,Mixed
-pocket parkrun,04/01/2020,3.1,00:21:22,Wi,Mixed
-pocket parkrun,01/01/2020,3.1,00:21:02,Wi,Mixed
-pocket parkrun,30/11/2019,3.1,00:19:11,Wi,Mixed
-,,,,,
-pocket parkrun,23/09/2019,3.1,00:20:11,Fa,Mixed
-pocket parkrun,05/09/2019,3.1,00:20:04,Fa,Mixed
-pocket parkrun,30/07/2019,3.1,00:18:31,Su,Mixed
-pocket parkrun,24/06/2019,3.1,00:19:11,Su,Mixed
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
+venue,date (dd/mm/yyyy),distance (miles),time (hh:mm:ss),season (Wi|Sp|Su|Fa),terrain (Road|XC|Mixed),Temperature (Kelvins)
+pocket parkrun,14/03/2020,3.1,00:18:57,Sp,Mixed,290
+pocket parkrun,07/03/2020,3.1,00:23:50,Sp,Mixed,285
+pocket parkrun,29/02/2020,3.1,00:21:49,Wi,Mixed,312
+pocket parkrun,22/02/2020,3.1,00:20:43,Wi,Mixed,318
+pocket parkrun,15/02/2020,3.1,00:20:39,Wi,Mixed,329
+pocket parkrun,25/01/2020,3.1,00:23:02,Wi,Mixed,340
+pocket parkrun,11/01/2020,3.1,00:22:54,Wi,Mixed,351
+pocket parkrun,04/01/2020,3.1,00:21:22,Wi,Mixed,362
+pocket parkrun,01/01/2020,3.1,00:21:02,Wi,Mixed,373
+pocket parkrun,30/11/2019,3.1,00:19:11,Wi,Mixed,384
+,,,,,,
+pocket parkrun,23/09/2019,3.1,00:20:11,Fa,Mixed,406
+pocket parkrun,05/09/2019,3.1,00:20:04,Fa,Mixed,417
+pocket parkrun,30/07/2019,3.1,00:18:31,Su,Mixed,428
+pocket parkrun,24/06/2019,3.1,00:19:11,Su,Mixed,439
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
