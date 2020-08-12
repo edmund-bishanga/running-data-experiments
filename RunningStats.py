@@ -60,10 +60,10 @@ for row in rows:
         str_time = row.get('time')
         hr, mm, ss = tuple(str_time.split(':'))
         duration = float((int(hr) * 3600 + int(mm) * 60 + int(ss)) / 60)
-        times.append(duration)
+        times.append(round(duration, 1))
 print('TIMES: seconds'); pprint(times, width=400)
-
 pprint(stats.describe(times))
+
 # 3. Do Running Economy Analysis
 
 # 4. Provide Recommendations
