@@ -1,10 +1,15 @@
 #!usr/bin/python
 
+import itertools
 import json
+import matplotlib.pyplot as pyplot
+import numpy
 import parser
-from pprint import pprint
-from scipy import stats
+import pylab
+import scipy.stats as stats
 import sys
+
+from pprint import pprint
 
 # exploring various statistical information keys from my running data
 # average pace
@@ -41,7 +46,6 @@ for header in rundata.pop(0).strip('\n').split(','):
         units.update({label:unit})
         labels.append(label)
 print('UNITS:'); pprint(units, width=400)
-print('LABELS'); pprint(labels, width=400)
 
 rows = list()
 for row in rundata:
@@ -49,20 +53,58 @@ for row in rundata:
         vals = [val for val in row.strip('\n').split(',')]
         lrow = dict(zip(labels, vals))
         rows.append(lrow)
-print('ROWS:'); pprint(rows, width=400)
+# print('ROWS:'); pprint(rows, width=400)
 
 # 2. Calculate basic running Stats
-times = list()
-event_search_str = 'pocket parkrun'
+y_values = list()
+x_values = list()
+event_name = 'pocket parkrun'
+event_x_axis = 'date'
+event_y_axis = 'time'
 for row in rows:
-    pprint(row)
-    if event_search_str in row.get('venue'):
-        str_time = row.get('time')
+    if event_name in row.get('venue'):
+        str_time = row.get(event_y_axis)
         hr, mm, ss = tuple(str_time.split(':'))
-        duration = float((int(hr) * 3600 + int(mm) * 60 + int(ss)) / 60)
-        times.append(round(duration, 1))
-print('TIMES: seconds'); pprint(times, width=400)
-pprint(stats.describe(times))
+        duration = round(float((int(hr) * 3600 + int(mm) * 60 + int(ss)) / 60), 1)
+        y_values.append(duration)
+
+        x_values.append(row.get(event_x_axis))
+coordinates = tuple(zip(x_values, y_values))
+print('title: {}'.format(event_name))
+print('x_axis: {}'.format(event_x_axis))
+print('y_axis: {}'.format(event_y_axis))
+print('Coordinates: '); pprint(coordinates, width=1600)
+
+# print('TIMES: minutes'); pprint(y_values, width=400)
+pprint(stats.describe(y_values))
+
+# 2b. Plot line graph
+pyplot.plot(x_values, y_values, 'o--r')
+pyplot.xlabel(event_x_axis)
+pyplot.ylabel(event_y_axis)
+pyplot.title(event_name)
+pyplot.show()
+
+# 2c. Plot normal distribution
+mean = round(numpy.mean(y_values), 2)
+print('mean: {}'.format(mean))
+
+std_dev = round(numpy.std(y_values), 4)
+print('std_dev: {}'.format(std_dev))
+
+variance = round(std_dev**2, 2)
+print('variance: {}'.format(variance))
+
+x_data = sorted(y_values)
+pyplot.plot(
+    x_data, 
+    1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (x_data - mean)**2 / (2 * std_dev**2) ), 
+    'o-', linewidth=3, color='r'
+)
+pyplot.xlabel('run times')
+pyplot.ylabel('likelihood')
+pyplot.title('{event}: estimated normal distribution'.format(event=event_name))
+pyplot.show()
 
 # 3. Do Running Economy Analysis
 
