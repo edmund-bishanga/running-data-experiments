@@ -23,7 +23,7 @@ from pprint import pprint
 #    Possible formats: .csv, .txt
 #    Parsing Data
 #    into Appropriate Data Structure e.g. Dictionaries, Named Tuples, Lists etc.
-runfile = "./ParkRun_Pocket_Bishanga_Edmund.csv"
+runfile = "./HalfMarathonBishangaEdmund.csv"
 
 def getFileContents(filepath):
     with open(filepath, 'r') as f:

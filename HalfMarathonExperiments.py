@@ -23,7 +23,7 @@ from pprint import pprint
 #    Possible formats: .csv, .txt
 #    Parsing Data
 #    into Appropriate Data Structure e.g. Dictionaries, Named Tuples, Lists etc.
-runfile = "./ParkRun_Pocket_Bishanga_Edmund.csv"
+runfile = "./HalfMarathonBishangaEdmund.csv"
 
 def getFileContents(filepath):
     with open(filepath, 'r') as f:
@@ -58,7 +58,7 @@ for row in rundata:
 # 2. Calculate basic running Stats
 y_values = list()
 x_values = list()
-event_name = 'pocket parkrun'
+event_name = 'Cambridge Half Marathon'
 event_x_axis = 'date'
 event_y_axis = 'time'
 for row in rows:
