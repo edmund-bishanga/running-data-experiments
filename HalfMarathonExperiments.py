@@ -28,7 +28,6 @@ runfile = "./HalfMarathonBishangaEdmund.csv"
 def getFileContents(filepath):
     with open(filepath, 'r') as f:
         fdata = f.readlines()
-    # pprint({filepath: fdata})
     return fdata
 
 rundata = getFileContents(runfile)
@@ -45,15 +44,20 @@ for header in rundata.pop(0).strip('\n').split(','):
         unit = header.split(' ')[1].strip('(').strip(')') if len(header.split(' ')) == 2 else ''
         units.update({label:unit})
         labels.append(label)
-print('UNITS:'); pprint(units, width=400)
 
 rows = list()
-for row in rundata:
-    if len(row.strip('\n').strip(',')) > 0:
-        vals = [val for val in row.strip('\n').split(',')]
-        lrow = dict(zip(labels, vals))
-        rows.append(lrow)
-# print('ROWS:'); pprint(rows, width=400)
+iter_rundata = iter(rundata)
+done = False
+while not done:
+    try:
+        row = next(iter_rundata)
+    except StopIteration:
+        done = True
+    else:
+        if len(row.strip('\n').strip(',')) > 0:
+            vals = [val for val in row.strip('\n').split(',')]
+            lrow = dict(zip(labels, vals))
+            rows.append(lrow)
 
 # 2. Calculate basic running Stats
 y_values = list()
@@ -61,14 +65,21 @@ x_values = list()
 event_name = 'Cambridge Half Marathon'
 event_x_axis = 'date'
 event_y_axis = 'time'
-for row in rows:
-    if event_name in row.get('venue'):
-        str_time = row.get(event_y_axis)
-        hr, mm, ss = tuple(str_time.split(':'))
-        duration = round(float((int(hr) * 3600 + int(mm) * 60 + int(ss)) / 60), 1)
-        y_values.append(duration)
 
-        x_values.append(row.get(event_x_axis))
+iter_rows = iter(rows)
+done = False
+while not done:
+    try:
+        row = next(iter_rows)
+    except StopIteration:
+        done = True
+    else:
+        if event_name in row.get('venue'):
+            str_time = row.get(event_y_axis)
+            hr, mm, ss = tuple(str_time.split(':'))
+            duration = round(float((int(hr) * 3600 + int(mm) * 60 + int(ss)) / 60), 1)
+            y_values.append(duration)
+            x_values.append(row.get(event_x_axis))
 coordinates = tuple(zip(x_values, y_values))
 print('title: {}'.format(event_name))
 print('x_axis: {}'.format(event_x_axis))
