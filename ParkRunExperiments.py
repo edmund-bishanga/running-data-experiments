@@ -23,12 +23,14 @@ from pprint import pprint
 #    Possible formats: .csv, .txt
 #    Parsing Data
 #    into Appropriate Data Structure e.g. Dictionaries, Named Tuples, Lists etc.
-runfile = "./ParkRun_Pocket_Bishanga_Edmund.csv"
+args = sys.argv[1:]
+assert len(args) == 2,'Please only provide two args: "InputFile.csv" "Event name".'
+runfile = args[0]
+event_name = args[1]
 
 def getFileContents(filepath):
     with open(filepath, 'r') as f:
         fdata = f.readlines()
-    # pprint({filepath: fdata})
     return fdata
 
 rundata = getFileContents(runfile)
@@ -37,6 +39,7 @@ rundata = getFileContents(runfile)
 if not rundata:
     print("{} seems empty or it's data inaccessible".format(runfile))
     exit(1)
+
 units = dict()
 labels = list()
 for header in rundata.pop(0).strip('\n').split(','):
@@ -45,7 +48,6 @@ for header in rundata.pop(0).strip('\n').split(','):
         unit = header.split(' ')[1].strip('(').strip(')') if len(header.split(' ')) == 2 else ''
         units.update({label:unit})
         labels.append(label)
-print('UNITS:'); pprint(units, width=400)
 
 rows = list()
 for row in rundata:
@@ -53,12 +55,10 @@ for row in rundata:
         vals = [val for val in row.strip('\n').split(',')]
         lrow = dict(zip(labels, vals))
         rows.append(lrow)
-# print('ROWS:'); pprint(rows, width=400)
 
 # 2. Calculate basic running Stats
 y_values = list()
 x_values = list()
-event_name = 'pocket parkrun'
 event_x_axis = 'date'
 event_y_axis = 'time'
 for row in rows:
@@ -97,8 +97,8 @@ print('variance: {}'.format(variance))
 
 x_data = sorted(y_values)
 pyplot.plot(
-    x_data, 
-    1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (x_data - mean)**2 / (2 * std_dev**2) ), 
+    x_data,
+    1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (x_data - mean)**2 / (2 * std_dev**2) ),
     'o-', linewidth=3, color='r'
 )
 pyplot.xlabel('run times')
@@ -107,7 +107,29 @@ pyplot.title('{event}: estimated normal distribution'.format(event=event_name))
 pyplot.show()
 
 # 3. Do Running Economy Analysis
+# VO2_max_per_parkrun
+# using Cooper's estimate: VO2_max ~= (35.97 * d12) - 11.29
+# where d12 = distances in miles, covered in 12min
+# Key assumptions:
+# 1. Runner runs at average pace, entire parkrun
+# 2. Parkrun is 5km in distance.
+# 3. It might be wise to put in a normalisation constant - assuming you'd run 12 min at a slightly faster pace than the ParkRun.
+# V02_max ~= (k * 36 * 12 * 3.1/t_parkrun_min) - 11.3
+# where, pace_adjustment, k ~= 1.02
+k = 1.02
+if 'parkrun' in event_name.lower():
+    # evaluate vo2_data from parkrun times
+    vo2_data = [round(((k * 36 * 12 * 3.1 / t_parkrun_minutes) - 11.3), 1) for t_parkrun_minutes in y_values]
+
+    # plot vo2_data vs dates.
+    pyplot.plot(
+        x_values,
+        vo2_data,
+        'x-', linewidth=3, color='g'
+    )
+    pyplot.xlabel('dates')
+    pyplot.ylabel('V02_max Estimate')
+    pyplot.title('{event}: estimated V02_max per Run'.format(event=event_name))
+    pyplot.show()
 
 # 4. Provide Recommendations
-
-
