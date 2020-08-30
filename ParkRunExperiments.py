@@ -107,15 +107,21 @@ pyplot.title('{event}: estimated normal distribution'.format(event=event_name))
 pyplot.show()
 
 # 3. Do Running Economy Analysis
+
 # VO2_max_per_parkrun
 # using Cooper's estimate: VO2_max ~= (35.97 * d12) - 11.29
 # where d12 = distances in miles, covered in 12min
+# source: https://en.wikipedia.org/wiki/VO2_max
+
 # Key assumptions:
 # 1. Runner runs at average pace, entire parkrun
 # 2. Parkrun is 5km in distance.
-# 3. It might be wise to put in a normalisation constant - assuming you'd run 12 min at a slightly faster pace than the ParkRun.
+# 3. It might be wise to put in a pace adjustment constant
+#    - assuming you'd run 12 min at a slightly faster pace than the ParkRun.
+
 # V02_max ~= (k * 36 * 12 * 3.1/t_parkrun_min) - 11.3
 # where, pace_adjustment, k ~= 1.02
+
 k = 1.02
 if 'parkrun' in event_name.lower():
     # evaluate vo2_data from parkrun times
