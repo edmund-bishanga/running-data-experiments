@@ -24,9 +24,10 @@ from pprint import pprint
 #    Parsing Data
 #    into Appropriate Data Structure e.g. Dictionaries, Named Tuples, Lists etc.
 args = sys.argv[1:]
-assert len(args) == 2,'Please only provide two args: "InputFile.csv" "Event name".'
+assert len(args) >= 2,'Please provide at least two args: "InputFile.csv" "Event name" ["year"]'
 runfile = args[0]
 event_name = args[1]
+years = args[2].split(',') if len(args) > 2 else ['2019']
 
 def getFileContents(filepath):
     with open(filepath, 'r') as f:
@@ -62,7 +63,7 @@ x_values = list()
 event_x_axis = 'date'
 event_y_axis = 'time'
 for row in rows:
-    if event_name in row.get('venue'):
+    if event_name in row.get('venue') and any(year in row.get('date') for year in years):
         str_time = row.get(event_y_axis)
         hr, mm, ss = tuple(str_time.split(':'))
         duration = round(float((int(hr) * 3600 + int(mm) * 60 + int(ss)) / 60), 1)
@@ -76,6 +77,7 @@ print('y_axis: {}'.format(event_y_axis))
 print('Coordinates: '); pprint(coordinates, width=1600)
 
 # 2a: output basic stats summary
+print('parkrun times: basic stats')
 pprint(stats.describe(y_values))
 
 # 2b. Plot line graph
@@ -108,6 +110,24 @@ pyplot.show()
 
 # 3. Do Running Economy Analysis
 
+# Heart-rate based Vo2_max estimate
+# Personal Data: HR_max, HR_rest
+# Estimate: V02_max ~= 15.3 * HR_max / HR_rest
+
+# Example: Ben: HR_max = 200, HR_rest = 45
+# Estimate:
+HR_max = 200
+HR_rest = 45
+print('MaxHR_runner_provided: {}'.format(HR_max))
+
+# # Tanaka estimate of MaxHR
+# Age = 36
+# HR_max = 208 - (0.7 * Age)
+# print('MaxHR_age: {}'.format(HR_max))
+
+vo2_hr_estimate = 15.3 * HR_max / HR_rest
+print('vo2_max HR potential ceiling: {}'.format(vo2_hr_estimate))
+
 # VO2_max_per_parkrun
 # using Cooper's estimate: VO2_max ~= (35.97 * d12) - 11.29
 # where d12 = distances in miles, covered in 12min
@@ -126,16 +146,32 @@ k = 1.02
 if 'parkrun' in event_name.lower():
     # evaluate vo2_data from parkrun times
     vo2_data = [round(((k * 36 * 12 * 3.1 / t_parkrun_minutes) - 11.3), 1) for t_parkrun_minutes in y_values]
+    print('v02_max parkrun estimates: ')
+    pprint(sorted(vo2_data), width=400)
+    print('v02_max_parkrun_estimate: basic stats')
+    pprint(stats.describe(vo2_data))
+
+    # normalised v02_max data
+    norm_vo2_data = [round((vo2_val / vo2_hr_estimate), 2) for vo2_val in vo2_data]
+    print('Normalised v02_max parkrun estimates: ')
+    pprint(norm_vo2_data, width=400)
 
     # plot vo2_data vs dates.
     pyplot.plot(
         x_values,
-        vo2_data,
+        norm_vo2_data,
         'x-', linewidth=3, color='g'
     )
     pyplot.xlabel('dates')
-    pyplot.ylabel('V02_max Estimate')
-    pyplot.title('{event}: estimated V02_max per Run'.format(event=event_name))
+    pyplot.ylabel('Normalised V02_max Effort')
+    pyplot.title('{event}: Normalised V02_max_Effort per Run'.format(event=event_name))
     pyplot.show()
+
+# The Runner
+# Key properties:
+# + heart: believer|non-believer, courageous|fearful
+# + mind: mature|immature, patient|impulsive
+# + body: natural attributes: height, proportions, weight,  nurture attributes: diet
+
 
 # 4. Provide Recommendations
