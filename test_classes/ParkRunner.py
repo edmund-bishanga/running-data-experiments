@@ -1,0 +1,39 @@
+#!usr/bin/python
+
+# The ParkRunner
+# Mind:
+#   + Resilience: basic,1|intermediate,2|senior,3|elite,4
+#   + Consistency: basic,1|intermediate,2|senior,3|elite,4 
+# Body:
+#   + BMI: height & weight metric
+#   + Vo2_max_potential: HR-based.
+
+class ParkRunner(object):
+    # Properties:
+    # + sensible defaults.
+    # + can be provided by user: not static.
+    def __init__(self, name, age, height, weight, resilience, consistency, restHR, maxHR):
+        self.name = name
+        self.age = age
+        self.height = height
+        self.weight = weight
+        self.restHR = restHR
+        self.maxHR = maxHR 
+        self.resilience = resilience
+        self.consistency = consistency
+        self.bmi = None
+        self.vo2max_potential = None
+
+    # Methods: Add on need-to-add basis.
+    # CalculateBMI: from height & weight.
+    def get_bmi(self):
+        self.bmi = round(self.weight / (self.height**2), 2)
+        return self.bmi
+
+    # CalculateVO2MaxPotential: from HR data: recent Range.
+    def get_vo2max_potential(self):
+        if not self.vo2max_potential:
+            self.vo2max_potential = round(15.3 * self.maxHR / self.restHR, 2)
+        return self.vo2max_potential
+
+    # Other
