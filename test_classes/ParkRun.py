@@ -15,7 +15,7 @@ class ParkRun(object):
         self.park = park
         self.runner = runner
         self.distance_km = distance_km
-        self.time_min = time_min
+        self.time_min = float(time_min)
         self.vo2max_current = None
         self.t_parkrun_min = None
 

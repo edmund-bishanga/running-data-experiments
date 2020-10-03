@@ -9,6 +9,8 @@ import pylab
 import scipy.stats as stats
 import sys
 
+import log_gardening
+
 from pprint import pprint
 
 # exploring various statistical information keys from my running data
@@ -29,6 +31,43 @@ def getFileContents(filepath):
     with open(filepath, 'r') as f:
         fdata = f.readlines()
     return fdata
+
+loglines = log_gardening.readlog_chunks(runfile, chunksize=16)
+for logline in loglines:
+    print(logline)
+exit(0)
+
+def getChunkyFileContents(filepath):
+    with open(filepath, 'r') as f:
+        while True:
+            # read in memory-efficient chunks
+            chunk = f.read(1024)
+            if not chunk:
+                break
+            # process chunk
+            for line in chunk.splitlines():
+                if line and line[0].isalpha():
+                    print(line)
+
+# getChunkyFileContents(runfile)
+
+def yieldChunkyFileContents(filepath):
+    with open(filepath, 'r') as f:
+        while True:
+            # read in memory-efficient chunks
+            chunk = f.read(16)
+            if not chunk:
+                break
+            yield chunk
+
+# for line in yieldChunkyFileContents(runfile).split('\n'):
+#     print(line)
+
+file_generator = (line.strip() for line in open(runfile, 'r'))
+for line in file_generator:
+    if line and line[0].isalnum():
+        print("'{}'".format(line))
+exit(0)
 
 rundata = getFileContents(runfile)
 
