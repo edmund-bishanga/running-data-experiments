@@ -24,10 +24,24 @@ from pprint import pprint
 #    Parsing Data
 #    into Appropriate Data Structure e.g. Dictionaries, Named Tuples, Lists etc.
 args = sys.argv[1:]
-assert len(args) >= 2,'Please provide at least two args: "InputFile.csv" "Event name" ["year"]'
-runfile = args[0]
-event_name = args[1]
-years = args[2].split(',') if len(args) > 2 else ['2019']
+# assert len(args) >= 2,'Please provide at least two args: "InputFile.csv" "Event name" ["year"]'
+# runfile = args[0]
+# event_name = args[1]
+# years = args[2].split(',') if len(args) > 2 else ['2019']
+
+help_txt = 'You can provide args [at least 2 or None at all]: ["InputFile.csv"] ["EventName"] ["year"]'
+if len(args) == 0:
+    print(help_txt)
+    runfile = "./ParkRun_Pocket_Bishanga_Edmund.csv"
+    event_name = "PocketParkRun"
+    years = "2019"
+elif len(args) >= 2:
+    runfile = args[0]
+    event_name = args[1]
+    years = args[2].split(',') if len(args) > 2 else ['2019']
+else:
+    assert(help_txt)
+print('Input validation: Inputs used: {}, {}, {}'.format(runfile, event_name, years))
 
 def getFileContents(filepath):
     with open(filepath, 'r') as f:
@@ -40,6 +54,8 @@ rundata = getFileContents(runfile)
 if not rundata:
     print("{} seems empty or it's data inaccessible".format(runfile))
     exit(1)
+
+exit(0)
 
 units = dict()
 labels = list()
