@@ -27,7 +27,8 @@ class ParkRunner(object):
     # Methods: Add on need-to-add basis.
     # CalculateBMI: from height & weight.
     def get_bmi(self):
-        self.bmi = round(self.weight / (self.height**2), 2)
+        if not self.bmi:
+            self.bmi = round(self.weight / (self.height**2), 2)
         return self.bmi
 
     # CalculateVO2MaxPotential: from HR data: recent Range.

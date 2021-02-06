@@ -24,11 +24,6 @@ from pprint import pprint
 #    Parsing Data
 #    into Appropriate Data Structure e.g. Dictionaries, Named Tuples, Lists etc.
 args = sys.argv[1:]
-# assert len(args) >= 2,'Please provide at least two args: "InputFile.csv" "Event name" ["year"]'
-# runfile = args[0]
-# event_name = args[1]
-# years = args[2].split(',') if len(args) > 2 else ['2019']
-
 help_txt = 'You can provide args [at least 2 or None at all]: ["InputFile.csv"] ["EventName"] ["year"]'
 if len(args) == 0:
     print(help_txt)
@@ -54,8 +49,6 @@ rundata = getFileContents(runfile)
 if not rundata:
     print("{} seems empty or it's data inaccessible".format(runfile))
     exit(1)
-
-exit(0)
 
 units = dict()
 labels = list()
@@ -84,7 +77,6 @@ for row in rows:
         hr, mm, ss = tuple(str_time.split(':'))
         duration = round(float((int(hr) * 3600 + int(mm) * 60 + int(ss)) / 60), 1)
         y_values.append(duration)
-
         x_values.append(row.get(event_x_axis))
 coordinates = tuple(zip(x_values, y_values))
 print('title: {}'.format(event_name))
