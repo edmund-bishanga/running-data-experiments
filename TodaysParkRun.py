@@ -63,7 +63,7 @@ def main():
     print("{}: Equivalent 5km_time: in hh:mm:ss {}".format(Runner.name, Race.get_t_parkrun_timestr()))
     print("{}: Estimated V02_current: {}".format(Runner.name, Race.get_vo2max_current()))
 
-    normalised_effort = 100 * round((Race.get_vo2max_current() / Runner.get_vo2max_potential()), 2)
+    normalised_effort = round(100 * (Race.get_vo2max_current() / Runner.get_vo2max_potential()), 1)
     print("{}: Normalised Effort: {}%\n".format(Runner.name, normalised_effort))
 
 if __name__ == '__main__':

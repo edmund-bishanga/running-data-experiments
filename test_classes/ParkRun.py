@@ -20,9 +20,38 @@ class ParkRun(object):
         self.time_min = float(time_min)
         self.vo2max_current = None
         self.t_parkrun_minutes = None
+        self.t_parkrun_seconds = None
         self.t_parkrun_timestr = None
 
     # Methods: Add on need-to-add basis.
+
+    def parse_race_timestr_to_seconds(self, parkrun_time_str):
+        """ convert hh:mm:ss into seconds """
+        time_array = parkrun_time_str.strip().split(':')
+        if len(time_array) == 3:
+            race_time_seconds = 3600 * int(time_array[0]) + 60 * int(time_array[1]) + int(time_array[2])
+        else:
+            assert('invalid parkrun_time_str: {}'.format(parkrun_time_str))
+        return race_time_seconds
+
+    def convert_seconds_to_timestr_hh_mm_ss(self, t_seconds):
+        """ from machine calculable seconds to human readable hh:mm:ss """
+        assert t_seconds, 'provide valid time_in_seconds'
+        print('DEBUG: t_seconds: {}'.format(t_seconds))
+        # 1min == 60s, 1hr == 60 * 60s
+        # get hours: t_sec: int divide by 60^2, hh = h_int, t_rem_2_s = t_sec - (h_int * 60^2)
+        # get minutes: t_rem_2_s: int divide by 60^1; mm = m_int, t_rem_1_s = t_rem_2_s - (m_int * 60^1)
+        # get remaining seconds: s_int = t_rem_1_s
+        t_hours = int(t_seconds / (60 * 60))
+        t_rem2_s = t_seconds - (t_hours * 60 * 60)
+        t_mins = int(t_rem2_s / 60)
+        t_seconds = t_rem2_s - (t_mins * 60)
+        t_hr_str = '0' + str(t_hours) if t_hours < 10 else str(t_hours)
+        t_min_str = '0' + str(t_mins) if t_mins < 10 else str(t_mins)
+        t_sec_str = str(t_seconds)
+        timestr_hhmmss = ':'.join([t_hr_str, t_min_str, t_sec_str])
+        print('DEBUG: t_hh_mm_ss: {}'.format(timestr_hhmmss))
+        return timestr_hhmmss
 
     def convert_to_timestr_hh_mm_ss(self, t_min_float):
         """ convert float to hh:mm:ss format """
@@ -43,6 +72,12 @@ class ParkRun(object):
         return timestr_hhmmss
 
     # Calculate t_parkrun_minutes
+    def get_t_parkrun_seconds(self):
+        if not self.t_parkrun_seconds:
+            self.t_parkrun_seconds = int(60 * 5 * self.time_min / self.distance_km)
+        return self.t_parkrun_seconds
+
+    # Calculate t_parkrun_minutes
     def get_t_parkrun_minutes(self):
         if not self.t_parkrun_minutes:
             self.t_parkrun_minutes = round((5 * self.time_min / self.distance_km), 1)
@@ -51,11 +86,11 @@ class ParkRun(object):
     # Calculate t_parkrun_minutes
     def get_t_parkrun_timestr(self):
         if not self.t_parkrun_timestr:
-            self.t_parkrun_timestr = self.convert_to_timestr_hh_mm_ss(self.get_t_parkrun_minutes())
+            self.t_parkrun_timestr = self.convert_seconds_to_timestr_hh_mm_ss(self.get_t_parkrun_seconds())
         return self.t_parkrun_timestr
 
     # CalculateVO2MaxCurrent: from latest Parkrun time.
     def get_vo2max_current(self):
         if not self.vo2max_current:
-            self.vo2max_current = round(((PACE_ADJUST_5K_12MIN * 36 * 12 * 3.1 / self.t_parkrun_minutes) - 11.3), 1)
+            self.vo2max_current = round(((PACE_ADJUST_5K_12MIN * 36 * 12 * 3.1 * 60 / self.t_parkrun_seconds) - 11.3), 1)
         return self.vo2max_current
