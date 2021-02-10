@@ -10,8 +10,8 @@ from pprint import pprint
 
 def main():
     # Example input format
-    # python3 ./TodaysParkRun.py -r "Bishanga, EM" -t 18.18 -s "PocketPark"
-    # python3 ./TodaysParkRun.py --runner "Bishanga, EM" --time 18.18 --space "PocketPark"
+    # python3 ./TodaysParkRun.py -a "Bishanga, EM" -t 00:18:18 -d 3.1 -s "PocketPark"
+    # python3 ./TodaysParkRun.py --athlete "Bishanga, EM" --time 00:18:18 --distance 3.1 --space "PocketPark"
     args = argparse.ArgumentParser()
     args.add_argument(
         '-a', "--athlete", default='Bishanga, EM', help='str: Name of Athlete'
@@ -43,7 +43,7 @@ def main():
     print('\nPark: Venue: {}'.format(Space.venue))
     print('Park: Temp: {} degCelcius'.format(Space.temperature))
 
-    Runner = ParkRunner(parkrunner_name, age=36, height=1.75, weight=67, resilience=2, consistency=2, restHR=45, maxHR=200)
+    Runner = ParkRunner(parkrunner_name)    # pylint: disable=no-value-for-parameter
     print("\n{}: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
     print("{}: BMI: {}".format(Runner.name, Runner.get_bmi()))
 
@@ -56,7 +56,7 @@ def main():
             assert('invalid parkrun_time_str: {}'.format(parkrun_time_str))
         return race_time_seconds
 
-    distance_in_km = round((float(parkrun_distance) * 1.67), 1)
+    distance_in_km = round((float(parkrun_distance) * 1.60934), 1)
     race_time_float = round(float(parse_race_time(parkrun_time) / 60), 1)  # in minutes, at the moment
     Race = ParkRun(park=Space, runner=Runner, distance_km=distance_in_km, time_min=race_time_float)
     print("\n{}: Time_run_today: in hh:mm:ss {}".format(Runner.name, parkrun_time))
