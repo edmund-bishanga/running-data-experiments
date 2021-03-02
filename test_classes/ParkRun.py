@@ -13,18 +13,20 @@ class ParkRun(object):
     # Properties:
     # + sensible defaults.
     # + can be provided by user: not static.
-    def __init__(self, park, runner, distance_km, time_min):
+    def __init__(self, park, runner, distance_km, run_timestr):
         self.park = park
         self.runner = runner
         self.distance_km = distance_km
-        self.time_min = float(time_min)
+        self.run_timestr = run_timestr
+        self.t_parkrun_timestr = None
         self.vo2max_current = None
         self.t_parkrun_minutes = None
         self.t_parkrun_seconds = None
-        self.t_parkrun_timestr = None
+        self.time_min = None
+        self.time_sec = None
+
 
     # Methods: Add on need-to-add basis.
-
     def parse_race_timestr_to_seconds(self, parkrun_time_str):
         """ convert hh:mm:ss into seconds """
         time_array = parkrun_time_str.strip().split(':')
@@ -48,7 +50,7 @@ class ParkRun(object):
         t_seconds = t_rem2_s - (t_mins * 60)
         t_hr_str = '0' + str(t_hours) if t_hours < 10 else str(t_hours)
         t_min_str = '0' + str(t_mins) if t_mins < 10 else str(t_mins)
-        t_sec_str = str(t_seconds)
+        t_sec_str = '0' + str(t_seconds) if t_seconds < 10 else str(t_seconds)
         timestr_hhmmss = ':'.join([t_hr_str, t_min_str, t_sec_str])
         print('DEBUG: t_hh_mm_ss: {}'.format(timestr_hhmmss))
         return timestr_hhmmss
@@ -71,19 +73,25 @@ class ParkRun(object):
         print('DEBUG: t_hh_mm_ss: {}'.format(timestr_hhmmss))
         return timestr_hhmmss
 
-    # Calculate t_parkrun_minutes
+    # Calculate time_sec
+    def get_time_sec(self):
+        if not self.time_sec:
+            self.time_sec = self.parse_race_timestr_to_seconds(self.run_timestr)
+        return self.time_sec
+
+    # Calculate t_parkrun_seconds
     def get_t_parkrun_seconds(self):
         if not self.t_parkrun_seconds:
-            self.t_parkrun_seconds = int(60 * 5 * self.time_min / self.distance_km)
+            self.t_parkrun_seconds = int(5 * self.get_time_sec() / self.distance_km)
         return self.t_parkrun_seconds
 
     # Calculate t_parkrun_minutes
     def get_t_parkrun_minutes(self):
         if not self.t_parkrun_minutes:
-            self.t_parkrun_minutes = round((5 * self.time_min / self.distance_km), 1)
+            self.t_parkrun_minutes = round((5 * self.get_time_sec() / (60 * self.distance_km)), 1)
         return self.t_parkrun_minutes
 
-    # Calculate t_parkrun_minutes
+    # Calculate t_parkrun_hh_mm_ss
     def get_t_parkrun_timestr(self):
         if not self.t_parkrun_timestr:
             self.t_parkrun_timestr = self.convert_seconds_to_timestr_hh_mm_ss(self.get_t_parkrun_seconds())
