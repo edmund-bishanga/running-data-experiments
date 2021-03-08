@@ -1,22 +1,38 @@
 #!usr/bin/python
+"""
+This Class: The ParkRun
+Definition:
+The event of a ParkRunner completing a Run in the Park.
 
-# The ParkRun
-# The event of a ParkRunner completing a Run in the Park.
+Ingredients:
++ attributes of a parkrun event
++ appropriate methods: time, pace, 5k equivalence
+"""
+
+# pylint: disable=missing-function-docstring
+# pylint: disable=line-too-long
+
+from pprint import pprint
 
 from test_classes.Park import Park
 from test_classes.ParkRunner import ParkRunner
-from pprint import pprint
 
 PACE_ADJUST_5K_12MIN = 1.03
+KMS_PER_MILE = 1.60934
 
 class ParkRun(object):
+    """
+    Defines an Event/Race in the Park, by a Runner:
+    distance covered, time taken, info gleaned
+    """
     # Properties:
     # + sensible defaults.
     # + can be provided by user: not static.
-    def __init__(self, park, runner, distance_km, run_timestr):
+    def __init__(self, park, runner, dist_miles, run_timestr):
         self.park = park
         self.runner = runner
-        self.distance_km = distance_km
+        self.dist_miles = float(dist_miles)
+        self.distance_km = round((float(dist_miles) * KMS_PER_MILE), 1)
         self.run_timestr = run_timestr
         self.t_parkrun_timestr = None
         self.vo2max_current = None
@@ -24,6 +40,7 @@ class ParkRun(object):
         self.t_parkrun_seconds = None
         self.time_min = None
         self.time_sec = None
+        self.race_pace = None
 
 
     # Methods: Add on need-to-add basis.
@@ -33,7 +50,7 @@ class ParkRun(object):
         if len(time_array) == 3:
             race_time_seconds = 3600 * int(time_array[0]) + 60 * int(time_array[1]) + int(time_array[2])
         else:
-            assert('invalid parkrun_time_str: {}'.format(parkrun_time_str))
+            assert 'invalid parkrun_time_str: {}'.format(parkrun_time_str)
         return race_time_seconds
 
     def convert_seconds_to_timestr_hh_mm_ss(self, t_seconds):
@@ -102,3 +119,9 @@ class ParkRun(object):
         if not self.vo2max_current:
             self.vo2max_current = round(((PACE_ADJUST_5K_12MIN * 36 * 12 * 3.1 * 60 / self.t_parkrun_seconds) - 11.3), 1)
         return self.vo2max_current
+
+    # Calculate Pace: miles/min
+    def get_race_pace(self):
+        if not self.race_pace:
+            self.race_pace = round((float(self.get_time_sec() / 60) / self.dist_miles), 2)
+        return self.race_pace
