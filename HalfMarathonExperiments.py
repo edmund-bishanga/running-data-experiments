@@ -1,24 +1,29 @@
 #!usr/bin/python
+"""
+Half Marathon Post-Run Data Analysis:
+Exploring various statistical information keys from my running data
++ average pace
++ total mileage
++ total time
++ VO2Max estimate
++ running economy analysis
+"""
+
+# pylint: disable=invalid-name
+# pylint: disable=unused-import
+# pylint: disable=missing-function-docstring
 
 import itertools
 import json
-import matplotlib.pyplot as pyplot
-import numpy
 import parser
-import pylab
-import scipy.stats as stats
 import sys
-
-import log_gardening
-
 from pprint import pprint
 
-# exploring various statistical information keys from my running data
-# average pace
-# total mileage
-# total time
-# VO2Max estimate
-# running economy analysis
+import numpy
+import pylab
+import matplotlib.pyplot as pyplot
+import scipy.stats as stats
+
 
 # 1. Get Run instance Data
 #    From a file, I/O input.
@@ -27,54 +32,22 @@ from pprint import pprint
 #    into Appropriate Data Structure e.g. Dictionaries, Named Tuples, Lists etc.
 runfile = "./HalfMarathonBishangaEdmund.csv"
 
-def getFileContents(filepath):
+def get_file_contents(filepath):
     with open(filepath, 'r') as f:
         fdata = f.readlines()
     return fdata
-
-loglines = log_gardening.readlog_chunks(runfile, chunksize=16)
-for logline in loglines:
-    print(logline)
-exit(0)
-
-def getChunkyFileContents(filepath):
-    with open(filepath, 'r') as f:
-        while True:
-            # read in memory-efficient chunks
-            chunk = f.read(1024)
-            if not chunk:
-                break
-            # process chunk
-            for line in chunk.splitlines():
-                if line and line[0].isalpha():
-                    print(line)
-
-# getChunkyFileContents(runfile)
-
-def yieldChunkyFileContents(filepath):
-    with open(filepath, 'r') as f:
-        while True:
-            # read in memory-efficient chunks
-            chunk = f.read(16)
-            if not chunk:
-                break
-            yield chunk
-
-# for line in yieldChunkyFileContents(runfile).split('\n'):
-#     print(line)
 
 file_generator = (line.strip() for line in open(runfile, 'r'))
 for line in file_generator:
     if line and line[0].isalnum():
         print("'{}'".format(line))
-exit(0)
 
-rundata = getFileContents(runfile)
+rundata = get_file_contents(runfile)
 
 # parse data -> appropriate data structure
 if not rundata:
     print("{} seems empty or it's data inaccessible".format(runfile))
-    exit(1)
+    sys.exit(1)
 units = dict()
 labels = list()
 for header in rundata.pop(0).strip('\n').split(','):
@@ -94,7 +67,7 @@ while not done:
         done = True
     else:
         if len(row.strip('\n').strip(',')) > 0:
-            vals = [val for val in row.strip('\n').split(',')]
+            vals = row.strip('\n').split(',')
             lrow = dict(zip(labels, vals))
             rows.append(lrow)
 
@@ -123,7 +96,8 @@ coordinates = tuple(zip(x_values, y_values))
 print('title: {}'.format(event_name))
 print('x_axis: {}'.format(event_x_axis))
 print('y_axis: {}'.format(event_y_axis))
-print('Coordinates: '); pprint(coordinates, width=1600)
+print('Coordinates: ')
+pprint(coordinates, width=1600)
 
 # 2a: output basic stats summary
 pprint(stats.describe(y_values))
@@ -147,8 +121,8 @@ print('variance: {}'.format(variance))
 
 x_data = sorted(y_values)
 pyplot.plot(
-    x_data, 
-    1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (x_data - mean)**2 / (2 * std_dev**2) ), 
+    x_data,
+    1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (x_data - mean)**2 / (2 * std_dev**2) ),
     'o-', linewidth=3, color='r'
 )
 pyplot.xlabel('run times')
@@ -159,5 +133,3 @@ pyplot.show()
 # 3. Do Running Economy Analysis
 
 # 4. Provide Recommendations
-
-
