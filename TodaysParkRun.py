@@ -12,7 +12,7 @@ import argparse
 import sys
 from pprint import pprint
 
-from test_classes.Park import Park
+from test_classes.Park import Park, TarRoad
 from test_classes.ParkRun import ParkRun
 from test_classes.ParkRunner import ParkRunner
 
@@ -49,9 +49,11 @@ def main():
     parkrun_temp = inputs.temperature
 
     # process run details
-    Space = Park(park_name, temperature=parkrun_temp, precipitation=2, surface="mixed", inclination=2)
+    # Space = Park(park_name, temperature=parkrun_temp, precipitation=2, surface="mixed", inclination=2)
+    Space = TarRoad(park_name, temperature=parkrun_temp, precipitation=2, surface='gravel', inclination=2)
     print('\nPark: Venue: {}'.format(Space.venue))
-    print('Park: Temp: {} degCelcius'.format(Space.temperature))
+    print('Park: Surface: {}'.format(Space.surface))
+    print('Park: Temp: {} degCelcius'.format(Space.get_temperature()))
 
     Runner = ParkRunner(parkrunner_name)    # pylint: disable=no-value-for-parameter
     print("\n{}: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
