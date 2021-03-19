@@ -15,11 +15,11 @@ Exploring various statistical information keys from my running data
 
 import itertools
 import json
-import parser
 import sys
 from pprint import pprint
 
 import numpy
+import pandas as pd
 import pylab
 import matplotlib.pyplot as pyplot
 import scipy.stats as stats
@@ -43,6 +43,13 @@ for line in file_generator:
         print("'{}'".format(line))
 
 rundata = get_file_contents(runfile)
+
+
+# use pandas to get rundata_frame
+run_dframe = pd.read_csv(runfile)
+print('DEBUG: run_dframe:')
+pprint(run_dframe)
+sys.exit(0)
 
 # parse data -> appropriate data structure
 if not rundata:
