@@ -63,7 +63,7 @@ def main():
     # Input validation
     args = argparse.ArgumentParser()
     args.add_argument(
-        '-f', "--input-file", default='./InputData_TestTodaysParkRun.json', help='str: path to JSON inputs file'
+        '-f', "--input-file", default='./data/InputData_TestTodaysParkRun.json', help='str: path to JSON inputs file'
     )
     inputs = args.parse_args()
     print('\nInput validation:')

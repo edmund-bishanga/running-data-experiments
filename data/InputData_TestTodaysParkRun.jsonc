@@ -1,0 +1,22 @@
+/** JSON file
+# Input data for testing API of 'TodaysParkRun.py'
+# Test Coverage analysis: EquivalencePartitioning Technique
+# 1. The Good: valid inputs: 
+#    Expectation: should work reliably.
+# 2. The Bad:  high likelihood, low impact invalid inputs: 
+#    Expectation: should fail gracefully.
+# 3. The Ugly: low likelihood, high impact invalid inputs: 
+#    Expectation: should recover/reset without panic
+**/
+
+{
+    "validA": ["-a", ["-a", "Bishanga, EM", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "PASS"],
+    "validB": ["-t", ["-a", "Bishanga, EM", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "PASS"],
+    "validC": ["-s", ["-a", "Bishanga, EM", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "PASS"],
+
+    "invalidA": ["-a", ["-a", 12345, "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "FAIL"],
+    "invalidB": ["-t", ["-a", "Bishanga, EM", "-t 3.16 -s 'PocketPark' -T 12 -t '1A:54'"], "FAIL"],
+    "invalidC": ["-s", ["-a", "Bishanga, EM", "-t 3.16 -s '%#PocketPark' -T 12 -t '00:19:54'"], "FAIL"],
+
+    "catastophicA": ["-a", ["-a", "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "FAIL"]
+}
