@@ -30,7 +30,7 @@ def main():
         '-d', "--distance", default=3.1, help='float: Distance in Miles'
     )
     args.add_argument(
-        '-t', "--time", default=20, help='strtime: RunTime in hh:mm:ss'
+        '-t', "--time", default='00:19:44', help='strtime: RunTime in hh:mm:ss'
     )
     args.add_argument(
         '-s', "--space", default="PocketPark", help="str: Park"

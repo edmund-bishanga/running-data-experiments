@@ -39,6 +39,7 @@ def run_api_check(relevant_inputs):
     print('\nDEBUG: outputs'); pprint(outputs)
     return outputs
 
+
 def test_api_athlete(inputs_json_file):
     """ API: -a, --athlete: test various inputs """
     # read json input
@@ -56,12 +57,13 @@ def test_api_athlete(inputs_json_file):
     # run test
     run_api_check(relevant_inputs)
 
+
 def main():
     """ Interactive function: API Testing. """
     # Input validation
     args = argparse.ArgumentParser()
     args.add_argument(
-        '-f', "--input-file", default='./InputData_TestTodaysParkRun.jsonc', help='str: path to JSON inputs file'
+        '-f', "--input-file", default='./InputData_TestTodaysParkRun.json', help='str: path to JSON inputs file'
     )
     inputs = args.parse_args()
     print('\nInput validation:')

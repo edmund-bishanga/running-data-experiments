@@ -48,7 +48,7 @@ class ParkRun(object):
         """ convert hh:mm:ss into seconds """
         time_array = parkrun_time_str.strip().split(':')
         if len(time_array) == 3:
-            race_time_seconds = 3600 * int(time_array[0]) + 60 * int(time_array[1]) + int(time_array[2])
+            race_time_seconds = 60 * 60 * int(time_array[0]) + 60 * int(time_array[1]) + int(time_array[2])
         else:
             assert 'invalid parkrun_time_str: {}'.format(parkrun_time_str)
         return race_time_seconds
