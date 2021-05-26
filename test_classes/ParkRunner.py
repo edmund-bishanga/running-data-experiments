@@ -34,7 +34,7 @@ class ParkRunner(object):
     # CalculateVO2MaxPotential: from HR data: recent Range.
     def get_vo2max_potential(self):
         if not self.vo2max_potential:
-            self.vo2max_potential = round(15.3 * self.maxHR / self.restHR, 2)
+            self.vo2max_potential = round(15.3 * float(self.maxHR / self.restHR), 2)
         return self.vo2max_potential
 
     # Other

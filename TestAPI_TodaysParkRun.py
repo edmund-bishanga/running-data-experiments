@@ -11,10 +11,22 @@ Interactive Script:
 
 import argparse
 import json
+import re
 import sys
 from pprint import pprint
 
 import requests
+
+def validate_api_cmd(cmd):
+    print('validate: api_cmd:'); pprint(cmd)
+    err_msg = 'invalid api_cmd: {}'.format(cmd)
+    assert 'python ' in cmd, err_msg
+
+    reg_str = r"\w+ .\/Today"
+    matched = re.search(reg_str, cmd)
+    print('DEBUG: matched'); pprint(matched)
+    reg_err_msg = 'invalid api_cmd format: expected regex: {} actual: {}'.format(reg_str, cmd)
+    assert matched, reg_err_msg
 
 def run_api_check(relevant_inputs):
     outputs = relevant_inputs
@@ -26,9 +38,15 @@ def run_api_check(relevant_inputs):
         api_cmd = api_cmd + " ".join(api_cmd_suffix)
         print('API_cmd: "{}"'.format(api_cmd))
 
+        validate_api_cmd(api_cmd)
+
         # run it
         # response = requests.get(api_cmd)
-        response = {'status_code': 200, 'text': 'OK'}
+        response = {'status_code': 101, 'text': 'work in progress...'}
+        # response = {'status_code': 200, 'text': 'OK'}
+        # response = {'status_code': 303, 'text': 'http: redirection, further action req'}
+        # response = {'status_code': 404, 'text': 'http: client error, check cli_syntax'}
+        # response = {'status_code': 505, 'text': 'http: server error, server failure'}
 
         # verify outcome
         outcome = 'FAIL'
@@ -40,17 +58,18 @@ def run_api_check(relevant_inputs):
     return outputs
 
 
-def test_api_athlete(inputs_json_file):
-    """ API: -a, --athlete: test various inputs """
+def test_api_name(inputs_json_file):
+    """ API: -n, --name: test various inputs """
     # read json input
     with open(inputs_json_file, 'r') as inputs_file:
         inputs_data = json.load(inputs_file)
     print('\nDEBUG: inputs_data'); pprint(inputs_data)
 
     # get relevant test input data
+    option = '-n'
     relevant_inputs = dict()
     for key in inputs_data:
-        if '-a' in inputs_data[key]:
+        if option in inputs_data[key]:
             relevant_inputs[key] = inputs_data[key]
     print('\nDEBUG: relevant_inputs'); pprint(relevant_inputs)
 
@@ -70,7 +89,7 @@ def main():
     pprint(inputs)
 
     # Test APIs
-    test_api_athlete(inputs.input_file)
+    test_api_name(inputs.input_file)
 
 
 if __name__ == '__main__':

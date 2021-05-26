@@ -1,11 +1,11 @@
 {
-    "validA": ["-a", ["-a", "Bishanga, EM", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "PASS"],
-    "validB": ["-t", ["-a", "Bishanga, EM", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "PASS"],
-    "validC": ["-s", ["-a", "Bishanga, EM", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "PASS"],
+    "validA": ["-n", ["-n", "'Bishanga, EM'", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "PASS"],
+    "validB": ["-t", ["-n", "'Bishanga, EM'", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "PASS"],
+    "validC": ["-s", ["-n", "'Bishanga, EM'", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "PASS"],
 
-    "invalidA": ["-a", ["-a", "12345", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "FAIL"],
-    "invalidB": ["-t", ["-a", "Bishanga, EM", "-t 3.16 -s 'PocketPark' -T 12 -t '1A:54'"], "FAIL"],
-    "invalidC": ["-s", ["-a", "Bishanga, EM", "-t 3.16 -s '%#PocketPark' -T 12 -t '00:19:54'"], "FAIL"],
+    "invalidA": ["-n", ["-n", "'12345'", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "FAIL"],
+    "invalidB": ["-t", ["-n", "'Bishanga, EM'", "-t 3.16 -s 'PocketPark' -T 12 -t '1A:54'"], "FAIL"],
+    "invalidC": ["-s", ["-n", "'Bishanga, EM'", "-t 3.16 -s '%#PocketPark' -T 12 -t '00:19:54'"], "FAIL"],
 
-    "catastophicA": ["-a", ["-a", "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "FAIL"]
+    "catastophicA": ["-n", ["-n", "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", "-t 3.16 -s 'PocketPark' -T 12 -t '00:19:54'"], "FAIL"]
 }

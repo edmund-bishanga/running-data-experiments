@@ -11,6 +11,7 @@ Ingredients:
 
 # pylint: disable=missing-function-docstring
 # pylint: disable=line-too-long
+# pylint: disable=unused-import
 
 from pprint import pprint
 
@@ -20,7 +21,7 @@ from test_classes.ParkRunner import ParkRunner
 PACE_ADJUST_5K_12MIN = 1.03
 KMS_PER_MILE = 1.60934
 
-class ParkRun(object):
+class ParkRun():
     """
     Defines an Event/Race in the Park, by a Runner:
     distance covered, time taken, info gleaned
@@ -44,23 +45,20 @@ class ParkRun(object):
 
 
     # Methods: Add on need-to-add basis.
-    def parse_race_timestr_to_seconds(self, parkrun_time_str):
+    @staticmethod
+    def parse_race_timestr_to_seconds(time_str):
         """ convert hh:mm:ss into seconds """
-        time_array = parkrun_time_str.strip().split(':')
-        if len(time_array) == 3:
-            race_time_seconds = 60 * 60 * int(time_array[0]) + 60 * int(time_array[1]) + int(time_array[2])
-        else:
-            assert 'invalid parkrun_time_str: {}'.format(parkrun_time_str)
+        time_array = time_str.strip().split(':')
+        if len(time_array) != 3:
+            assert "invalid time_str: {}".format(time_str)
+        race_time_seconds = 60 * 60 * int(time_array[0]) + 60 * int(time_array[1]) + int(time_array[2])
+        print('DEBUG: race_time_seconds: ', race_time_seconds)
         return race_time_seconds
 
-    def convert_seconds_to_timestr_hh_mm_ss(self, t_seconds):
+    @staticmethod
+    def convert_seconds_to_timestr_hh_mm_ss(t_seconds):
         """ from machine calculable seconds to human readable hh:mm:ss """
-        assert t_seconds, 'provide valid time_in_seconds'
-        print('DEBUG: t_seconds: {}'.format(t_seconds))
-        # 1min == 60s, 1hr == 60 * 60s
-        # get hours: t_sec: int divide by 60^2, hh = h_int, t_rem_2_s = t_sec - (h_int * 60^2)
-        # get minutes: t_rem_2_s: int divide by 60^1; mm = m_int, t_rem_1_s = t_rem_2_s - (m_int * 60^1)
-        # get remaining seconds: s_int = t_rem_1_s
+        assert t_seconds >= 0, 'provide valid time_in_seconds'
         t_hours = int(t_seconds / (60 * 60))
         t_rem2_s = t_seconds - (t_hours * 60 * 60)
         t_mins = int(t_rem2_s / 60)
@@ -69,7 +67,6 @@ class ParkRun(object):
         t_min_str = '0' + str(t_mins) if t_mins < 10 else str(t_mins)
         t_sec_str = '0' + str(t_seconds) if t_seconds < 10 else str(t_seconds)
         timestr_hhmmss = ':'.join([t_hr_str, t_min_str, t_sec_str])
-        print('DEBUG: t_hh_mm_ss: {}'.format(timestr_hhmmss))
         return timestr_hhmmss
 
     def convert_to_timestr_hh_mm_ss(self, t_min_float):
@@ -123,5 +120,5 @@ class ParkRun(object):
     # Calculate Pace: miles/min
     def get_race_pace(self):
         if not self.race_pace:
-            self.race_pace = round((float(self.get_time_sec() / 60) / self.dist_miles), 2)
+            self.race_pace = round((float(self.get_time_sec() / 60) / self.dist_miles), 1)
         return self.race_pace

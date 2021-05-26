@@ -30,7 +30,7 @@ import scipy.stats as stats
 #    Possible formats: .csv, .txt
 #    Parsing Data
 #    into Appropriate Data Structure e.g. Dictionaries, Named Tuples, Lists etc.
-runfile = "./HalfMarathonBishangaEdmund.csv"
+runfile = "./data/HalfMarathonBishangaEdmund.csv"
 
 def get_file_contents(filepath):
     with open(filepath, 'r') as f:
@@ -49,7 +49,7 @@ rundata = get_file_contents(runfile)
 run_dframe = pd.read_csv(runfile)
 print('DEBUG: run_dframe:')
 pprint(run_dframe)
-sys.exit(0)
+# sys.exit(0)
 
 # parse data -> appropriate data structure
 if not rundata:

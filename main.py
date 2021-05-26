@@ -12,17 +12,19 @@ def main():
 
     # check input args
     args = sys.argv[1:]
+    print('DEBUG: args: length: {}'.format(len(args))); pprint(args)
     help_txt = 'You can provide args [all 3 or None at all]: ["ParkName"] ["ParkRunnerName"] ["ParkRunTime"]'
     if len(args) == 0:
         print(help_txt)
         park_name = "RiversidePark"
         parkrunner_name = "BishangaE"
-        parkrun_time = 20.0
+        parkrun_time = "00:20:00"  #hh:mm:ss
     elif len(args) == 3:
         park_name = args[0]
         parkrunner_name = args[1]
         parkrun_time = args[2]
     else:
+        print('DEBUG 2: args: length: {}'.format(len(args))); pprint(args)
         assert(help_txt)
     print('Input validation: Inputs used: {}, {}, {}'.format(park_name, parkrunner_name, parkrun_time))
 
@@ -35,12 +37,13 @@ def main():
     print("\n{}: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
     print("{}: BMI: {}".format(Runner.name, Runner.get_bmi()))
 
-    Race = ParkRun(park=Space, runner=Runner, distance_km=5, time_min=parkrun_time)
-    print("\n{}: 5km_time_min: {}".format(Runner.name, Race.get_t_parkrun_min()))
+    Race = ParkRun(park=Space, runner=Runner, dist_miles=float("3.16"), run_timestr=str(parkrun_time))
+    print("\n{}: 5km_time_min: {}".format(Runner.name, Race.get_t_parkrun_timestr()))
     print("{}: V02_current: {}".format(Runner.name, Race.get_vo2max_current()))
 
     normalised_effort = 100 * round((Race.get_vo2max_current() / Runner.get_vo2max_potential()), 2)
     print("\n{}: Normalised Effort: {}%\n".format(Runner.name, normalised_effort))
+
 
 if __name__ == '__main__':
     main()
