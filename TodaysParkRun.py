@@ -60,8 +60,6 @@ def main():
 
     park_name = inputs.space
     parkrunner_name = inputs.name
-    # parkrun_time = inputs.time
-    # parkrun_distance = inputs.distance
     parkrun_temp = inputs.temperature
 
     # process run details

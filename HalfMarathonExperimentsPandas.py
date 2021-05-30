@@ -34,7 +34,7 @@ import scipy.stats as stats
 #    Possible formats: .csv, .txt
 #    Parsing Data
 #    into Appropriate Data Structure e.g. Dictionaries, Named Tuples, Lists etc.
-runfile = "./HalfMarathonBishangaEdmund.csv"
+runfile = "./data/HalfMarathonBishangaEdmund.csv"
 
 # def get_file_contents(filepath):
 #     with open(filepath, 'r') as f:
@@ -52,7 +52,7 @@ def parse_input_args():
     args = argparse.ArgumentParser()
     args.add_argument(
         '-f', "--run-file-path",
-        default="./HalfMarathonBishangaEdmund.csv",
+        default="./data/HalfMarathonBishangaEdmund.csv",
         help='str: filepath with RunData: CSV'
     )
     args.add_argument(
@@ -69,7 +69,7 @@ def validate_inputs(inputs):
 
 # use pandas to get rundata_frame
 def get_rundata_from_file(runfilepath):
-    run_dframe = pd.read_csv(runfile)
+    run_dframe = pd.read_csv(runfilepath)
     if run_dframe is None or not isinstance(run_dframe, pd.DataFrame):
         print("run_dframe: empty or invalid: DataFrame expected.\n{}".format(run_dframe))
         sys.exit(1)    
