@@ -26,7 +26,7 @@ Current Running SBs: 2019
   * Read Engineering, MA MEng 
   * Pembroke College, Cambridge, UK, 2003-7.
 * with over 10 years experience in System Test, CI & Automation.
-* Further Details: https://www.linkedin.com/in/muzoora-edmund-bishanga-ma-meng-cantab-miet-a0748272/
+* Further Details: https://www.linkedin.com/in/edmund-muzoora-bishanga-ma-meng-cantab-miet-a0748272/
 
 Thank you.
 
