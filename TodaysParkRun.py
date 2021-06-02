@@ -69,9 +69,13 @@ def main():
     print('Park: Surface: {}'.format(Space.surface))
     print('Park: Temp: {} degCelcius'.format(Space.get_temperature()))
 
-    if inputs.age:
-        err_msg = "Please provide height, weight, restHR, maxHR: For Details, see --help"
-        assert inputs.height or inputs.weight or inputs.restHR or inputs.maxHR, err_msg
+    if inputs.age or inputs.weight:
+        err_msg = """
+            For BMI, VO2_max eval, please provide ALL:
+            height, weight, restHR, maxHR
+            Details, add ' --help'
+        """
+        assert inputs.height and inputs.weight and inputs.restHR and inputs.maxHR, err_msg
         Runner = ParkRunner(parkrunner_name, age=int(inputs.age), height=float(inputs.height),
                  weight=float(inputs.weight), restHR=int(inputs.restHR), maxHR=int(inputs.maxHR))    # pylint: disable=no-value-for-parameter
     else:
