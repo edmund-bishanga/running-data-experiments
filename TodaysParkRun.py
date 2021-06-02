@@ -40,19 +40,19 @@ def main():
         '-T', "--temperature", default=10, help="int: Temperature on the day"
     )
     args.add_argument(
-        '-A', "--age", default=36, help='int: Age of Athlete, years'
+        '-A', "--age", help='int: Age of Athlete, years'
     )
     args.add_argument(
-        '-H', "--height", default=1.75, help='float: Height of Athlete, metres'
+        '-H', "--height", help='float: Height of Athlete, metres'
     )
     args.add_argument(
-        '-W', "--weight", default=67.5, help='float: Weight of Athlete, kg'
+        '-W', "--weight", help='float: Weight of Athlete, kg'
     )
     args.add_argument(
-        '-L', "--restHR", default=45, help='int: Resting HeartRate of Athlete, bpm'
+        '-L', "--restHR", help='int: Resting HeartRate of Athlete, bpm'
     )
     args.add_argument(
-        '-M', "--maxHR", default=200, help='int: Max HeartRate of Athlete, bpm'
+        '-M', "--maxHR", help='int: Max HeartRate of Athlete, bpm'
     )
     inputs = args.parse_args()
     print('\nInput validation:')
@@ -69,18 +69,27 @@ def main():
     print('Park: Surface: {}'.format(Space.surface))
     print('Park: Temp: {} degCelcius'.format(Space.get_temperature()))
 
-    Runner = ParkRunner(parkrunner_name, age=int(inputs.age), height=float(inputs.height), weight=float(inputs.weight), restHR=int(inputs.restHR), maxHR=int(inputs.maxHR))    # pylint: disable=no-value-for-parameter
-    print("\n{}: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
-    print("{}: BMI: {}".format(Runner.name, Runner.get_bmi()))
+    if inputs.age:
+        err_msg = "Please provide height, weight, restHR, maxHR: For Details, see --help"
+        assert inputs.height or inputs.weight or inputs.restHR or inputs.maxHR, err_msg
+        Runner = ParkRunner(parkrunner_name, age=int(inputs.age), height=float(inputs.height),
+                 weight=float(inputs.weight), restHR=int(inputs.restHR), maxHR=int(inputs.maxHR))    # pylint: disable=no-value-for-parameter
+    else:
+        Runner = ParkRunner(parkrunner_name)
+    # print("\n{}: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
+    print("\n{}: BMI: {}".format(Runner.name, Runner.get_bmi()))
 
     Race = ParkRun(park=Space, runner=Runner, dist_miles=float(inputs.distance), run_timestr=inputs.time)
     print("\n{}: Time_run_today: in hh:mm:ss {}".format(Runner.name, inputs.time))
     print("{}: Estimated Pace: {} min/mile".format(Runner.name, Race.get_race_pace()))
-    print("{}: Equivalent 5km_time: in hh:mm:ss {}".format(Runner.name, Race.get_t_parkrun_timestr()))
-    print("{}: Estimated V02_current: {}".format(Runner.name, Race.get_vo2max_current()))
+    print("\n{}: Equivalent 5km_time: in hh:mm:ss {}".format(Runner.name, Race.get_t_parkrun_timestr()))
+    # print("{}: Estimated V02_current: {}".format(Runner.name, Race.get_vo2max_current()))
 
     normalised_effort = round(100 * (Race.get_vo2max_current() / Runner.get_vo2max_potential()), 1)
-    print("{}: Normalised Effort: %V02_max: {}%\n".format(Runner.name, normalised_effort))
+    print("{}: Normalised Effort: %V02_max: {}%".format(Runner.name, normalised_effort))
+
+    normalised_5k_effort = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.t_parkrun_pb_seconds) / Runner.t_parkrun_pb_seconds)), 1)
+    print("{}: Normalised Effort: Recent5kTime {}%\n".format(Runner.name, normalised_5k_effort))
 
 if __name__ == '__main__':
     main()

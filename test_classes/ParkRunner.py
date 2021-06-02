@@ -12,7 +12,7 @@ class ParkRunner(object):
     # Properties:
     # + sensible defaults...
     # + can be provided by user: not static.
-    def __init__(self, name, age=36, height=1.75, weight=67, resilience=2, consistency=2, restHR=45, maxHR=200):
+    def __init__(self, name, age=37, height=1.75, weight=67, resilience=2, consistency=2, restHR=45, maxHR=200):
         self.name = name
         self.age = age
         self.height = height
@@ -23,6 +23,7 @@ class ParkRunner(object):
         self.consistency = consistency
         self.bmi = None
         self.vo2max_potential = None
+        self.t_parkrun_pb_seconds = 1050  # "00:17:30" 5k Season's Best
 
     # Methods: Add on need-to-add basis.
     # CalculateBMI: from height & weight.

@@ -12,22 +12,22 @@ Exploring various statistical information keys from my running data
 
 # pylint: disable=invalid-name
 # pylint: disable=unused-import
+# pylint: disable=multiple-statements
 # pylint: disable=missing-function-docstring
 
 import argparse
 import itertools
 import json
-import requests
 import sys
 from pprint import pprint
-from requests.auth import HTTPBasicAuth
 
+import matplotlib.pyplot as pyplot
 import numpy
 import pandas as pd
 import pylab
-import matplotlib.pyplot as pyplot
+import requests
 import scipy.stats as stats
-
+from requests.auth import HTTPBasicAuth
 
 # 1. Get Run instance Data
 #    From a file, I/O input.
@@ -72,7 +72,7 @@ def get_rundata_from_file(runfilepath):
     run_dframe = pd.read_csv(runfilepath)
     if run_dframe is None or not isinstance(run_dframe, pd.DataFrame):
         print("run_dframe: empty or invalid: DataFrame expected.\n{}".format(run_dframe))
-        sys.exit(1)    
+        sys.exit(1)
     # print('DEBUG: run_dframe:'); pprint(run_dframe)
     return run_dframe
 
@@ -92,7 +92,7 @@ def get_rundata_from_url(run_url):
     run_dframe = pd.read_json(response.json())
     if run_dframe is None or not isinstance(run_dframe, pd.DataFrame):
         print("run_dframe: empty or invalid: DataFrame expected.\n{}".format(run_dframe))
-        sys.exit(1)    
+        sys.exit(1)
     # print('DEBUG: run_dframe:'); pprint(run_dframe)
     return run_dframe
 
@@ -106,7 +106,7 @@ def main():
     if inputs.run_file_path:
         listed_run_dframe = get_rundata_from_file(inputs.run_file_path)
         print('DEBUG: listed_run_dframe'); pprint(listed_run_dframe)
-    
+
     if inputs.run_url_link:
         strava_run_dframe = get_rundata_from_url(inputs.run_url_link)
         print('DEBUG: strava_run_dframe'); pprint(strava_run_dframe)
@@ -161,6 +161,7 @@ def main():
     print('x_axis: {}'.format(event_x_axis))
     print('y_axis: {}'.format(event_y_axis))
     print('Coordinates: ')
+
     pprint(coordinates, width=1600)
 
     # 1c: output basic stats summary
@@ -186,7 +187,7 @@ def main():
     x_data = sorted(y_values)
     pyplot.plot(
         x_data,
-        1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (x_data - mean)**2 / (2 * std_dev**2) ),
+        1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp(-(x_data - mean)**2 / (2 * std_dev**2)),
         'o-', linewidth=3, color='r'
     )
     pyplot.xlabel('run times')
