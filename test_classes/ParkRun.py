@@ -1,11 +1,11 @@
 #!usr/bin/python
 """
-This Class: The ParkRun
+This Class describes The ParkRun
 Definition:
-The event of a ParkRunner completing a Run in the Park.
-
+The Real-time Temporal-Spatial Event 
+of a ParkRunner completing a Run in a specific Space: a Park.
 Ingredients:
-+ attributes of a parkrun event
++ attributes of the Parkrun: a temporal-spatial event
 + appropriate methods: time, pace, 5k equivalence
 """
 

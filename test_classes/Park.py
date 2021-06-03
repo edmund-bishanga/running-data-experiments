@@ -1,12 +1,16 @@
 #!usr/bin/python
 
-# The Park
-# Weather:
-#   + Temperature: frozen|cold|warm|hot
-#   + Precipitation: snow|rain|drizzle|dry 
-# Terrain:
-#   + Surface: mud|grass|gravel|tarmac
-#   + Inclination: mountane|hilly|undulating|flat
+"""
+This Class describes The Park: Athletics Training Space
+Environmental Characteristics: Static and Dynamic
+Weather:
+  + Temperature: frozen|cold|warm|hot
+  + Precipitation: snow|rain|drizzle|dry 
+Terrain:
+  + Surface: mud|grass|gravel|tarmac
+  + Inclination: mountane|hilly|undulating|flat
+"""
+
 
 class Park(object):
     # Properties:

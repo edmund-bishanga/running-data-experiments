@@ -1,12 +1,16 @@
 #!usr/bin/python
 
-# The ParkRunner
-# Mind:
-#   + Resilience: basic,1|intermediate,2|senior,3|elite,4
-#   + Consistency: basic,1|intermediate,2|senior,3|elite,4 
-# Body:
-#   + BMI: height & weight metric
-#   + Vo2_max_potential: HR-based.
+""" 
+This Class describes: The ParkRunner
+The Athlete: Psychologically and Physiologically
+Mind:
+  + Resilience: basic,1|intermediate,2|senior,3|elite,4
+  + Consistency: basic,1|intermediate,2|senior,3|elite,4 
+Body:
+  + BMI: height & weight metric
+  + Vo2_max_potential: HR-based.
+"""
+
 
 class ParkRunner(object):
     # Properties:
