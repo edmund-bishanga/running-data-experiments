@@ -19,11 +19,13 @@ Current Running PBs: 2020
 
 ## SCHOLASTIC: PYTHON DEVELOPER IN SYSTEM TEST
 * Am also a Cambridge University Graduate.
-  * Read Engineering, MA MEng: Electrical and Information
-  * Pembroke College, Cambridge, UK, 2003-7.
-* with over 10 years experience in System Test/Verification, CI & Automation.
-* With preference for Python/Git, Linux/Bash Shell.
-* And Experience of Agile/SCRUM, JIRA, Jenkins
+  * Read Engineering, MA MEng: Electrical and Information<br/>
+    http://www.eng.cam.ac.uk/
+  * Pembroke College, Cambridge, UK, 2003-7<br/>
+    https://www.pem.cam.ac.uk/
+* Over 10 years experience in System Test/Verification, CI & Automation.
+* With Preference for Python/Git, Linux/Bash Shell.
+* And Experience of Agile/SCRUM, JIRA, Jenkins: CI/CD
 * Further Details: https://www.linkedin.com/in/edmund-muzoora-bishanga-ma-meng-cantab-miet-a0748272/
 
 Thank you.
