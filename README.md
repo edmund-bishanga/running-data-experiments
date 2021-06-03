@@ -1,34 +1,32 @@
 # running-data-experiments
-## PURPOSE OF REPO:
-* Continuous learning about Data Analysis using Python & Git 
+## PURPOSE OF REPO
+* Continuous Experimental Learning/Tinkering about Data Analysis using Python & Git<br/> 
   via my hobby - Endurance Running.
 
-* Personal play/tinkering:
-  * misc experiments
-  * playing with a few ideas
-
-## HOBBY DETAILS:
-Am an Endurance Runner with my local amateur Running Club:
+## ATHLETIC: AMATEUR ENDURANCE RUNNER
+Am an Endurance Runner with my local amateur Running Club, in the UK
 * Riverside Runners, St Neots, Cambridgeshire
   https://riverside-runners.com/
 
-## RECENT RUNNING STATS:
-Current Running SBs: 2019
-* ParkRun/5k:          18min
-* 10k:                 38min
-* Half-Marathon:       1hr 22min.
-* Marathon:            3hr 08min.
-* Further Details: Strava: 
-  Edmund Bishanga: https://www.strava.com/athletes/22072047
+Current Running PBs: 2020
+* The Mile/1.61km:             5min
+* ParkRun: 3.1Miles/5km:      18min
+* 10km: 6.25Miles:            38min
+* Half-Marathon: 13.1Miles:   1hr 22min.
+* Marathon: 26.2Miles:        3hr 08min.
+* Further Details:<br/>
+  RunBritain: https://www.runbritainrankings.com/runners/profile.aspx?athleteid=858716
 
-## EDUCATION BACKGROUND:
+## SCHOLASTIC: PYTHON DEVELOPER IN SYSTEM TEST
 * Am also a Cambridge University Graduate.
-  * Read Engineering, MA MEng 
+  * Read Engineering, MA MEng: Electrical and Information
   * Pembroke College, Cambridge, UK, 2003-7.
-* with over 10 years experience in System Test, CI & Automation.
+* with over 10 years experience in System Test/Verification, CI & Automation.
+* With preference for Python/Git, Linux/Bash Shell.
+* And Experience of Agile/SCRUM, JIRA, Jenkins
 * Further Details: https://www.linkedin.com/in/edmund-muzoora-bishanga-ma-meng-cantab-miet-a0748272/
 
 Thank you.
 
-Edmund Muzoora BISHANGA
-June 2020
+Edmund Muzoora BISHANGA<br/>
+June 2021
