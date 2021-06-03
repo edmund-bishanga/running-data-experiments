@@ -71,7 +71,7 @@ def main():
 
     if inputs.age or inputs.weight:
         err_msg = """
-            For BMI, VO2_max eval, please provide ALL:
+            For BMI, VO2_max analysis, please provide ALL:
             height, weight, restHR, maxHR
             Details, add ' --help'
         """
