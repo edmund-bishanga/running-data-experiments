@@ -17,6 +17,12 @@ from test_classes.Park import Park, TarRoad
 from test_classes.ParkRun import ParkRun
 from test_classes.ParkRunner import ParkRunner
 
+def validate_inputs(inputs):
+    input_format_err_msg = "invalid format: details, see --help/-h"
+
+    err_msg_t = "{}: {}".format('--time, -t',  input_format_err_msg)
+    assert ':' in inputs.time, err_msg_t
+
 
 def main():
     """ Interactive function: Inputs event details, provides normalised insights. """
@@ -56,6 +62,7 @@ def main():
     )
     inputs = args.parse_args()
     print('\nInput validation:')
+    validate_inputs(inputs)
     pprint(inputs)
 
     park_name = inputs.space

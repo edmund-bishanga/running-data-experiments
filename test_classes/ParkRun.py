@@ -48,10 +48,10 @@ class ParkRun():
     @staticmethod
     def parse_race_timestr_to_seconds(time_str):
         """ convert hh:mm:ss into seconds """
-        time_array = time_str.strip().split(':')
-        if len(time_array) != 3:
+        t_array = time_str.strip().split(':')
+        if len(t_array) != 3:
             assert "invalid time_str: {}".format(time_str)
-        race_time_seconds = 60 * 60 * int(time_array[0]) + 60 * int(time_array[1]) + int(time_array[2])
+        race_time_seconds = 60 * 60 * int(t_array[0]) + 60 * int(t_array[1]) + int(t_array[2])
         print('DEBUG: race_time_seconds: ', race_time_seconds)
         return race_time_seconds
 
