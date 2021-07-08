@@ -2,7 +2,7 @@
 """
 This Class describes The ParkRun
 Definition:
-The Real-time Temporal-Spatial Event 
+The Real-time Temporal-Spatial Event
 of a ParkRunner completing a Run in a specific Space: a Park.
 Ingredients:
 + attributes of the Parkrun: a temporal-spatial event
@@ -12,6 +12,7 @@ Ingredients:
 # pylint: disable=missing-function-docstring
 # pylint: disable=line-too-long
 # pylint: disable=unused-import
+# pylint: disable=invalid-name
 
 from pprint import pprint
 
@@ -20,6 +21,8 @@ from test_classes.ParkRunner import ParkRunner
 
 PACE_ADJUST_5K_12MIN = 1.03
 KMS_PER_MILE = 1.60934
+DEF_RUN_TIMESTR = '00:18:44'
+DEF_DIST_MILES = 3.16
 
 class ParkRun():
     """
@@ -29,20 +32,52 @@ class ParkRun():
     # Properties:
     # + sensible defaults.
     # + can be provided by user: not static.
-    def __init__(self, park, runner, dist_miles, run_timestr):
+    def __init__(self, park, runner, dist_miles=None, run_timestr=None, pace=None):
         self.park = park
         self.runner = runner
-        self.dist_miles = float(dist_miles)
-        self.distance_km = round((float(dist_miles) * KMS_PER_MILE), 1)
+        self.dist_miles = float(dist_miles) if dist_miles else None
         self.run_timestr = run_timestr
+        self.race_pace = float(pace) if pace else None
+        self.distance_km = None
         self.t_parkrun_timestr = None
-        self.vo2max_current = None
         self.t_parkrun_minutes = None
         self.t_parkrun_seconds = None
         self.time_min = None
         self.time_sec = None
-        self.race_pace = None
+        self.vo2max_current = None
 
+    # Given pace & time, calculate distance run
+    def get_dist_miles(self):
+        if not self.dist_miles:
+            if self.race_pace:
+                time_min = self.parse_race_timestr_to_seconds(self.get_run_timestr()) / 60
+                self.dist_miles = round(float(time_min / self.race_pace), 2)
+            else:
+                self.dist_miles = DEF_DIST_MILES
+        return self.dist_miles
+
+    def get_run_timestr(self):
+        if not self.run_timestr:
+            if not self.race_pace:
+                self.run_timestr = DEF_RUN_TIMESTR
+            else:
+                self.run_timestr = self.convert_seconds_to_timestr_hh_mm_ss(self.get_time_sec())
+        return self.run_timestr
+
+    # Calculate time_sec
+    def get_time_sec(self):
+        if not self.time_sec:
+            if not self.race_pace:
+                self.time_sec = self.parse_race_timestr_to_seconds(self.get_run_timestr())
+            else:
+                self.time_sec = int(self.get_dist_miles() * self.get_race_pace() * 60)
+        return self.time_sec
+
+    # Calculate Pace: miles/min
+    def get_race_pace(self):
+        if not self.race_pace:
+            self.race_pace = round((float(self.get_time_sec() / 60) / self.get_dist_miles()), 1)
+        return self.race_pace
 
     # Methods: Add on need-to-add basis.
     @staticmethod
@@ -69,7 +104,8 @@ class ParkRun():
         timestr_hhmmss = ':'.join([t_hr_str, t_min_str, t_sec_str])
         return timestr_hhmmss
 
-    def convert_to_timestr_hh_mm_ss(self, t_min_float):
+    @staticmethod
+    def convert_to_timestr_hh_mm_ss(t_min_float):
         """ convert float to hh:mm:ss format """
         # mins: left of decimal point
         # secs: right of decimal point * 60
@@ -87,22 +123,16 @@ class ParkRun():
         print('DEBUG: t_hh_mm_ss: {}'.format(timestr_hhmmss))
         return timestr_hhmmss
 
-    # Calculate time_sec
-    def get_time_sec(self):
-        if not self.time_sec:
-            self.time_sec = self.parse_race_timestr_to_seconds(self.run_timestr)
-        return self.time_sec
-
     # Calculate t_parkrun_seconds
     def get_t_parkrun_seconds(self):
         if not self.t_parkrun_seconds:
-            self.t_parkrun_seconds = int(5 * self.get_time_sec() / self.distance_km)
+            self.t_parkrun_seconds = int(5 * self.get_time_sec() / self.get_distance_km())
         return self.t_parkrun_seconds
 
     # Calculate t_parkrun_minutes
     def get_t_parkrun_minutes(self):
         if not self.t_parkrun_minutes:
-            self.t_parkrun_minutes = round((5 * self.get_time_sec() / (60 * self.distance_km)), 1)
+            self.t_parkrun_minutes = round((5 * self.get_time_sec() / (60 * self.get_distance_km())), 1)
         return self.t_parkrun_minutes
 
     # Calculate t_parkrun_hh_mm_ss
@@ -117,8 +147,7 @@ class ParkRun():
             self.vo2max_current = round(((PACE_ADJUST_5K_12MIN * 36 * 12 * 3.1 * 60 / self.t_parkrun_seconds) - 11.3), 1)
         return self.vo2max_current
 
-    # Calculate Pace: miles/min
-    def get_race_pace(self):
-        if not self.race_pace:
-            self.race_pace = round((float(self.get_time_sec() / 60) / self.dist_miles), 1)
-        return self.race_pace
+    def get_distance_km(self):
+        if not self.distance_km:
+            self.distance_km = round((float(self.get_dist_miles()) * KMS_PER_MILE), 1)
+        return self.distance_km

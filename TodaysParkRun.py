@@ -8,6 +8,8 @@ Interactive Script:
 
 # pylint: disable=line-too-long
 # pylint: disable=invalid-name
+# pylint: disable=unused-import
+# pylint: disable=missing-function-docstring
 
 import argparse
 import sys
@@ -19,9 +21,9 @@ from test_classes.ParkRunner import ParkRunner
 
 def validate_inputs(inputs):
     input_format_err_msg = "invalid format: details, see --help/-h"
-
-    err_msg_t = "{}: {}".format('--time, -t',  input_format_err_msg)
-    assert ':' in inputs.time, err_msg_t
+    if inputs.time:
+        err_msg_t = "{}: {}".format('--time, -t',  input_format_err_msg)
+        assert ':' in inputs.time, err_msg_t
 
 
 def main():
@@ -34,10 +36,10 @@ def main():
         '-n', "--name", default='Bishanga, EM', help='str: Name of Athlete'
     )
     args.add_argument(
-        '-d', "--distance", default=3.16, help='float: Distance, miles'
+        '-d', "--distance", help='float: Distance, miles'
     )
     args.add_argument(
-        '-t', "--time", default='00:18:44', help='strtime: RunTime, hh:mm:ss'
+        '-t', "--time", help='strtime: RunTime, hh:mm:ss'
     )
     args.add_argument(
         '-s', "--space", default="PocketPark", help="str: Park"
@@ -47,6 +49,9 @@ def main():
     )
     args.add_argument(
         '-A', "--age", help='int: Age of Athlete, years'
+    )
+    args.add_argument(
+        '-P', "--pace", help='float: Pace of athlete, min/mile'
     )
     args.add_argument(
         '-H', "--height", help='float: Height of Athlete, metres'
@@ -90,8 +95,11 @@ def main():
     # print("\n{}: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
     print("\n{}: BMI: {}".format(Runner.name, Runner.get_bmi()))
 
-    Race = ParkRun(park=Space, runner=Runner, dist_miles=float(inputs.distance), run_timestr=inputs.time)
-    print("\n{}: Time_run_today: in hh:mm:ss {}".format(Runner.name, inputs.time))
+    Race = ParkRun(park=Space, runner=Runner, dist_miles=inputs.distance, run_timestr=inputs.time, pace=inputs.pace)
+    dist_run_today = inputs.distance if inputs.distance else Race.get_dist_miles()
+    print("\n{}: Dist_run_today: in miles {}".format(Runner.name, dist_run_today))
+    strtime_run_today = inputs.time if inputs.time else Race.convert_seconds_to_timestr_hh_mm_ss(Race.get_time_sec())
+    print("\n{}: Time_run_today: in hh:mm:ss {}".format(Runner.name, strtime_run_today))
     print("{}: Estimated Pace: {} min/mile".format(Runner.name, Race.get_race_pace()))
     print("\n{}: Equivalent 5km_time: in hh:mm:ss {}".format(Runner.name, Race.get_t_parkrun_timestr()))
     # print("{}: Estimated V02_current: {}".format(Runner.name, Race.get_vo2max_current()))
