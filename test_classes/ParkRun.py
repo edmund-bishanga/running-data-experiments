@@ -37,7 +37,8 @@ class ParkRun():
         self.runner = runner
         self.dist_miles = float(dist_miles) if dist_miles else None
         self.run_timestr = run_timestr
-        self.race_pace = float(pace) if pace else None
+        self.race_pace_str = pace
+        self.race_pace = None
         self.distance_km = None
         self.t_parkrun_timestr = None
         self.t_parkrun_minutes = None
@@ -70,14 +71,22 @@ class ParkRun():
             if not self.race_pace:
                 self.time_sec = self.parse_race_timestr_to_seconds(self.get_run_timestr())
             else:
-                self.time_sec = int(self.get_dist_miles() * self.get_race_pace() * 60)
+                self.time_sec = round(float(self.get_dist_miles() * self.get_race_pace() * 60), 2)
         return self.time_sec
 
-    # Calculate Pace: miles/min
+    # Calculate Pace: miles/min: float
     def get_race_pace(self):
         if not self.race_pace:
             self.race_pace = round((float(self.get_time_sec() / 60) / self.get_dist_miles()), 1)
         return self.race_pace
+
+    # Calculate Pace Str: mm:ss miles/min
+    def get_race_pace_str(self):
+        if not self.race_pace_str:
+            self.race_pace_str = self.convert_min_float_to_timestr_hh_mm_ss(self.get_race_pace())
+            if self.race_pace_str.startswith('00:'):
+                self.race_pace_str = self.race_pace_str.split('00:')[-1]
+        return self.race_pace_str
 
     # Methods: Add on need-to-add basis.
     @staticmethod
@@ -87,7 +96,6 @@ class ParkRun():
         if len(t_array) != 3:
             assert "invalid time_str: {}".format(time_str)
         race_time_seconds = 60 * 60 * int(t_array[0]) + 60 * int(t_array[1]) + int(t_array[2])
-        print('DEBUG: race_time_seconds: ', race_time_seconds)
         return race_time_seconds
 
     @staticmethod
@@ -105,12 +113,11 @@ class ParkRun():
         return timestr_hhmmss
 
     @staticmethod
-    def convert_to_timestr_hh_mm_ss(t_min_float):
+    def convert_min_float_to_timestr_hh_mm_ss(t_min_float):
         """ convert float to hh:mm:ss format """
         # mins: left of decimal point
         # secs: right of decimal point * 60
         assert t_min_float, 'provide valid time_in_min_float'
-        print('DEBUG: t_min_float: {}'.format(t_min_float))
         t_hr = '00'
         t_min, t_frac = str(t_min_float).split('.')
         if int(t_min) > 60:
@@ -118,9 +125,9 @@ class ParkRun():
             t_hr, t_rem_min = str(t_hr_float).split('.')
             t_hr = t_hr if int(t_hr) >= 10 else '0' + t_hr
             t_min = str(int(float(t_rem_min) * 0.06))
+        t_min = '0' + t_min if float(t_min) < 10 else t_min
         t_sec = str((int(t_frac) * 6))
         timestr_hhmmss = ':'.join([t_hr, t_min, t_sec])
-        print('DEBUG: t_hh_mm_ss: {}'.format(timestr_hhmmss))
         return timestr_hhmmss
 
     # Calculate t_parkrun_seconds

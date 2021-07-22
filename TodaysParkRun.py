@@ -51,7 +51,7 @@ def main():
         '-A', "--age", help='int: Age of Athlete, years'
     )
     args.add_argument(
-        '-P', "--pace", help='float: Pace of athlete, min/mile'
+        '-P', "--pace", help='str: Pace of athlete, "mm:ss" min/mile'
     )
     args.add_argument(
         '-H', "--height", help='float: Height of Athlete, metres'
@@ -100,7 +100,7 @@ def main():
     print("\n{}: Dist_run_today: in miles {}".format(Runner.name, dist_run_today))
     strtime_run_today = inputs.time if inputs.time else Race.convert_seconds_to_timestr_hh_mm_ss(Race.get_time_sec())
     print("\n{}: Time_run_today: in hh:mm:ss {}".format(Runner.name, strtime_run_today))
-    print("{}: Estimated Pace: {} min/mile".format(Runner.name, Race.get_race_pace()))
+    print("{}: Estimated Pace: {} min/mile".format(Runner.name, Race.get_race_pace_str()))
     print("\n{}: Equivalent 5km_time: in hh:mm:ss {}".format(Runner.name, Race.get_t_parkrun_timestr()))
     # print("{}: Estimated V02_current: {}".format(Runner.name, Race.get_vo2max_current()))
 
