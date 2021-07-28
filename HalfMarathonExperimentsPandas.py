@@ -18,6 +18,7 @@ Exploring various statistical information keys from my running data
 import argparse
 import itertools
 import json
+import re
 import sys
 from pprint import pprint
 
@@ -78,49 +79,142 @@ def get_rundata_from_file(runfilepath):
 
 def get_rundata_from_url(run_url):
     # get appropriate json: requests
-    response = requests.get(run_url, auth=HTTPBasicAuth('me.bishanga@gmail.com', 'gm!XYZ47'))
+    response = requests.get(
+        run_url, auth=HTTPBasicAuth('me.bishanga@gmail.com', 'Pswd123Not')
+    )
     # response = requests.get(run_url)
-    print('DEBUG: response: entire'); pprint(response)
-    print('DEBUG: response: status_code'); pprint(response.status_code)
+    print('\nDEBUG: response: entire'); pprint(response)
+    print('\nDEBUG: response: status_code'); pprint(response.status_code)
     # assert '{' in response, "empty json, no rundata from {}".format(run_url)
-    # print('DEBUG: response: json'); pprint(response.json())
-    # print('DEBUG: response: text'); pprint(response.text)
-    print('DEBUG: response: header'); pprint(response.headers)
-    sys.exit(0)
+    # print('\nDEBUG: response: json'); pprint(response.json())
+    # print('\nDEBUG: response: text'); pprint(response.text)
+    print('\nDEBUG: response: header'); pprint(response.headers)
+    # sys.exit(0)
 
     # convert json to data_frame: pandas
-    run_dframe = pd.read_json(response.json())
+    run_dframe = {}
+    try:
+        run_dframe = pd.read_json(response.json()) if response.json() else None
+    except json.decoder.JSONDecodeError as JsonErr:
+        print('\nDEBUG: JSONDecoderError'); pprint(JsonErr)
     if run_dframe is None or not isinstance(run_dframe, pd.DataFrame):
-        print("run_dframe: empty or invalid: DataFrame expected.\n{}".format(run_dframe))
+        print("\nrun_dframe: empty or invalid: DataFrame expected.\n{}".format(run_dframe))
         sys.exit(1)
     # print('DEBUG: run_dframe:'); pprint(run_dframe)
     return run_dframe
 
 def main():
     # 0. Input validation
-    inputs = parse_input_args()
+    # inputs = parse_input_args()
+    args = argparse.ArgumentParser()
+    args.add_argument(
+        '-f', "--run-file-path",
+        default="./data/HalfMarathonBishangaEdmund.csv",
+        help='str: filepath with RunData: CSV'
+    )
+    args.add_argument(
+        '-l', "--run-url-link",
+        default="https://www.strava.com/activities/4933282708",
+        help='str: URL link for a run event: e.g. Strava'
+    )
+    inputs = args.parse_args()
     validate_inputs(inputs)
 
     # 1. Process HM Data
     # 1a: parse data -> appropriate data structure
     if inputs.run_file_path:
-        listed_run_dframe = get_rundata_from_file(inputs.run_file_path)
-        print('DEBUG: listed_run_dframe'); pprint(listed_run_dframe)
+        rundata = get_rundata_from_file(inputs.run_file_path)
+        print('\nDEBUG: rundata'); pprint(rundata)
 
     if inputs.run_url_link:
         strava_run_dframe = get_rundata_from_url(inputs.run_url_link)
-        print('DEBUG: strava_run_dframe'); pprint(strava_run_dframe)
+        print('\nDEBUG: strava_run_dframe'); pprint(strava_run_dframe)
+
     sys.exit(0)
 
+    print('\nDEBUG: rundata details:')
+    pprint(type(rundata))
+    pprint(rundata.columns)
+    for column_key in rundata.columns:
+        print('\nDEBUG: column_key: {}'.format(column_key))
+        pprint(rundata[column_key])
+
+    run_json = pd.DataFrame.to_json(rundata)
+    print('\nDEBUG: run_json'); pprint(run_json)
+
+    run_dict = pd.DataFrame.to_dict(rundata)
+    print('\nDEBUG: run_dict: '); pprint(run_dict)
+
+    # Explore pandas DataFrame data type
+    # rows: index = key, loc, iloc,
+    num_row = 3
+    for num_row in rundata.index:
+        print('\nDEBUG: row: {}'.format(num_row)); pprint(rundata.iloc[num_row])
+    # sys.exit(0)
+    # columns: column = key; get by key
+    col_key = 'time (hh:mm:ss)'
+    for col_key in rundata.columns:
+        print('\nDEBUG: column: {}'.format(col_key)); pprint(rundata[col_key])
+    sys.exit(0)
+
+    # 1d. Plot line graph
+    event_name = 'Cambridge Half Marathon'
+    event_x_axis = 'date'
+    event_y_axis = 'time'
+
+    durations = rundata['time (hh:mm:ss)']
+    print('\nDEBUG: durations:'); pprint(durations)
+    dates = rundata['date (dd/mm/yyyy)']
+    print('\nDEBUG: dates:'); pprint(dates)
+
+    y_values = list()
+    for duration in durations[:4]:
+        hr, mm, ss = tuple(duration.split(':'))
+        duration_sec = round(float((int(hr) * 3600 + int(mm) * 60 + int(ss)) / 60), 1)
+        y_values.append(duration_sec)
+    x_values = [date for date in dates if '/03' in date]
+    print('\nDEBUG: x_values'); pprint(x_values)
+
+    pyplot.plot(x_values, y_values, 'o--r')
+    pyplot.xlabel(event_x_axis)
+    pyplot.ylabel(event_y_axis)
+    pyplot.title(event_name)
+    pyplot.show()
+
+    sys.exit(0)
+
+    # Get the header units/labels
     units = dict()
     labels = list()
-    for header in rundata.pop(0).strip('\n').split(','):
-        if header:
-            label = header.split(' ')[0]
-            unit = header.split(' ')[1].strip('(').strip(')') if len(header.split(' ')) == 2 else ''
-            units.update({label:unit})
-            labels.append(label)
+    print('DEBUG: headers:'); pprint(rundata.columns)
+    for header in rundata.columns:
+        # use REGEX: pattern, keyed?
+        # e.g. word1 (word2)
+        # r'^(\w+) \((.*)\)'
+        # r'^(?P<label>\w+) \((?P<unit>.*)\)'
+        reg_str = r'^(\w+) \((.*)\)'
+        match = re.search(reg_str, header)
+        label, unit = match.groups() if match else (header, '')
 
+        # use PLAINTEXT: strip, split
+        # label, unit = tuple(header.split(' ')) if ' ' in header else (header, '')
+        # unit = unit.strip('(').strip(')')
+
+        units.update({label: unit})
+        labels.append(label)
+    print('DEBUG: units'); pprint(units)
+    print('DEBUG: labels'); pprint(labels)
+
+    # for header in rundata.pop(0).strip('\n').split(','):
+    #     if header:
+    #         label = header.split(' ')[0]
+    #         unit = header.split(' ')[1].strip('(').strip(')') if len(header.split(' ')) == 2 else ''
+    #         units.update({label:unit})
+    #         labels.append(label)
+
+    sys.exit(0)
+
+    # Get the rows of raw data
     rows = list()
     iter_rundata = iter(rundata)
     done = False
