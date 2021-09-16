@@ -1,0 +1,15 @@
+{
+    "surName" : "Nyakabira",
+    "firstName" : "Josiah",
+    "dateOfBirth_yyyy-mm-dd" : "1989-10-14",
+    "parkRunner_id" : "A1618583",
+    "prBMIDetails": {
+        "height_m" : 1.75,
+        "weight_kg" : 67.5
+    },
+    "prVO2MaxDetails": {
+        "restHR_bpm" : 45,
+        "maxHR_bpm" : 195,
+        "age" : 32
+    }
+}
