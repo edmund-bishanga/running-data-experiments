@@ -26,18 +26,27 @@ class ParkRunner(object):
         self.resilience = resilience
         self.consistency = consistency
         self.bmi = None
+        self.t_bmi = None
         self.vo2max_potential = None
         self.t_parkrun_pb_seconds = 1050  # "00:17:30" 5k Season's Best
         self.parkrunner_details = parkrunner_details
 
     # Methods: Add on need-to-add basis.
     # CalculateBMI: from height & weight.
+    # https://en.wikipedia.org/wiki/Body_mass_index
     def get_bmi(self):
         if not self.bmi:
             self.bmi = round(self.get_pr_weight() / (self.get_pr_height()**2), 2)
         return self.bmi
 
+    # https://en.wikipedia.org/wiki/Nick_Trefethen
+    def get_trefethen_bmi(self):
+        if not self.t_bmi:
+            self.t_bmi = round((1.3 * self.get_pr_weight() / (self.get_pr_height()**2.5)), 2)
+        return self.t_bmi
+
     # CalculateVO2MaxPotential: from HR data: recent Range.
+    # https://en.wikipedia.org/wiki/VO2_max#The_heart_rate_ratio_method
     def get_vo2max_potential(self):
         if not self.vo2max_potential:
             self.vo2max_potential = round(15.3 * float(self.get_pr_max_hr() / self.get_pr_rest_hr()), 2)

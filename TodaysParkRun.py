@@ -107,6 +107,7 @@ def main():
         Runner = ParkRunner(parkrunner_name, parkrunner_details=pr_details)
     print("\n{}: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
     print("\n{}: BMI: {}".format(Runner.name, Runner.get_bmi()))
+    print("{}: TrefethenBMI: {}".format(Runner.name, Runner.get_trefethen_bmi()))
 
     Race = ParkRun(park=Space, runner=Runner, dist_miles=inputs.distance, run_timestr=inputs.time, pace=inputs.pace)
     dist_run_today = inputs.distance if inputs.distance else Race.get_dist_miles()
