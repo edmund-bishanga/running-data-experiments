@@ -1,28 +1,31 @@
 #!usr/bin/python
 
-""" 
+"""
 This Class describes: The ParkRunner
 The Athlete: Psychologically and Physiologically
 Mind:
   + Resilience: basic,1|intermediate,2|senior,3|elite,4
-  + Consistency: basic,1|intermediate,2|senior,3|elite,4 
+  + Consistency: basic,1|intermediate,2|senior,3|elite,4
 Body:
   + BMI: height & weight metric
   + Vo2_max_potential: HR-based.
 """
 
+# pylint: disable=missing-function-docstring
 
-class ParkRunner(object):
+class ParkRunner():
+    """ The Athlete: key attributes and methods. """
     # Properties:
     # + sensible defaults...
     # + can be provided by user: not static.
-    def __init__(self, name, age=37, height=1.75, weight=67, resilience=2, consistency=2, restHR=45, maxHR=200, parkrunner_details=None):
+    def __init__(self, name, age=37, height=1.75, weight=67, resilience=2,
+        consistency=2, resting_hr=45, max_hr=200, parkrunner_details=None):
         self.name = name
         self.age = age
         self.pr_height = height
         self.pr_weight = weight
-        self.restHR = restHR
-        self.maxHR = maxHR 
+        self.resting_hr = resting_hr
+        self.max_hr = max_hr
         self.resilience = resilience
         self.consistency = consistency
         self.bmi = None
@@ -42,14 +45,18 @@ class ParkRunner(object):
     # https://en.wikipedia.org/wiki/Nick_Trefethen
     def get_trefethen_bmi(self):
         if not self.t_bmi:
-            self.t_bmi = round((1.3 * self.get_pr_weight() / (self.get_pr_height()**2.5)), 2)
+            self.t_bmi = round(
+                (1.3 * self.get_pr_weight() / (self.get_pr_height()**2.5)), 2
+            )
         return self.t_bmi
 
     # CalculateVO2MaxPotential: from HR data: recent Range.
     # https://en.wikipedia.org/wiki/VO2_max#The_heart_rate_ratio_method
     def get_vo2max_potential(self):
         if not self.vo2max_potential:
-            self.vo2max_potential = round(15.3 * float(self.get_pr_max_hr() / self.get_pr_rest_hr()), 2)
+            self.vo2max_potential = round(
+                15.3 * float(self.get_pr_max_hr() / self.get_pr_resting_hr()), 2
+            )
         return self.vo2max_potential
 
     # Use parkrunner details dictionary, to calculate bmi & v02max_potential
@@ -65,12 +72,12 @@ class ParkRunner(object):
 
     def get_pr_max_hr(self):
         if self.parkrunner_details:
-            self.maxHR = self.parkrunner_details.get('prVO2MaxDetails').get('maxHR_bpm')
-        return self.maxHR
+            self.max_hr = self.parkrunner_details.get('prVO2MaxDetails').get('max_hr_bpm')
+        return self.max_hr
 
-    def get_pr_rest_hr(self):
+    def get_pr_resting_hr(self):
         if self.parkrunner_details:
-            self.restHR = self.parkrunner_details.get('prVO2MaxDetails').get('restHR_bpm')
-        return self.restHR
+            self.resting_hr = self.parkrunner_details.get('prVO2MaxDetails').get('resting_hr_bpm')
+        return self.resting_hr
 
     # Other

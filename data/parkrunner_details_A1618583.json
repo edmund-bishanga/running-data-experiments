@@ -8,8 +8,8 @@
         "weight_kg" : 67.5
     },
     "prVO2MaxDetails": {
-        "restHR_bpm" : 45,
-        "maxHR_bpm" : 195,
+        "resting_hr_bpm" : 45,
+        "max_hr_bpm" : 195,
         "age" : 32
     }
 }

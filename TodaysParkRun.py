@@ -69,7 +69,7 @@ def main():
         '-W', "--weight", help='float: Weight of Athlete, kg'
     )
     args.add_argument(
-        '-L', "--rest-hr", help='int: Resting HeartRate of Athlete, bpm'
+        '-L', "--resting-hr", help='int: Resting HeartRate of Athlete, bpm'
     )
     args.add_argument(
         '-M', "--max-hr", help='int: Max HeartRate of Athlete, bpm'
@@ -93,12 +93,15 @@ def main():
     if inputs.age or inputs.weight:
         err_msg = """
             For BMI, VO2_max analysis, please provide ALL:
-            height, weight, restHR, maxHR
+            height, weight, resting_hr, max_hr
             Details, add ' --help'
         """
-        assert inputs.height and inputs.weight and inputs.rest_hr and inputs.max_hr, err_msg
-        Runner = ParkRunner(parkrunner_name, age=int(inputs.age), height=float(inputs.height),
-                 weight=float(inputs.weight), restHR=int(inputs.rest_hr), maxHR=int(inputs.max_hr))    # pylint: disable=no-value-for-parameter
+        assert inputs.height and inputs.weight and inputs.resting_hr and inputs.max_hr, err_msg
+        Runner = ParkRunner(
+                    parkrunner_name, age=int(inputs.age),
+                    height=float(inputs.height), weight=float(inputs.weight),
+                    resting_hr=int(inputs.resting_hr), max_hr=int(inputs.max_hr)
+                 )    # pylint: disable=no-value-for-parameter
     else:
         # get parkrunner details as dictionary, from appropriate JSON dataStore
         pr_details = get_pr_details(inputs.parkrun_id)
