@@ -1,16 +1,16 @@
 {
     "surName" : "PAISLEY",
-    "firstName" : "Josiah",
+    "firstName" : "Paula",
     "dateOfBirth_yyyy-mm-dd" : "1989-10-14",
     "parkrunner_id" : "A1618583",
     "homeParkRun" : "PeelParkDos",
     "prBMIDetails": {
-        "height_m" : 1.75,
+        "height_m" : 1.55,
         "weight_kg" : 67.5
     },
     "prVO2MaxDetails": {
-        "resting_hr_bpm" : 45,
-        "max_hr_bpm" : 195,
-        "age" : 32
+        "resting_hr_bpm" : 55,
+        "max_hr_bpm" : 145,
+        "age" : 60
     }
 }
