@@ -18,8 +18,9 @@ class ParkRunner():
     # Properties:
     # + sensible defaults...
     # + can be provided by user: not static.
-    def __init__(self, name, age=37, height=1.75, weight=67, resilience=2,
-        consistency=2, resting_hr=45, max_hr=200, parkrunner_details=None):
+    def __init__(self, name=None, age=37, height=1.75, weight=67, resilience=2,
+            consistency=2, resting_hr=45, max_hr=200, parkrunner_details=None
+        ):
         self.name = name
         self.age = age
         self.pr_height = height

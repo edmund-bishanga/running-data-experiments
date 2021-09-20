@@ -1,8 +1,9 @@
 {
-    "surName" : "Nyakabira",
+    "surName" : "PAISLEY",
     "firstName" : "Josiah",
     "dateOfBirth_yyyy-mm-dd" : "1989-10-14",
-    "parkRunner_id" : "A1618583",
+    "parkrunner_id" : "A1618583",
+    "homeParkRun" : "PeelParkDos",
     "prBMIDetails": {
         "height_m" : 1.75,
         "weight_kg" : 67.5

@@ -20,16 +20,39 @@ from test_classes.Park import Park, TarRoad
 from test_classes.ParkRun import ParkRun
 from test_classes.ParkRunner import ParkRunner
 
+DEFAULT_DATA_DIR = './data'
+DEFAULT_ENCODING = 'utf-8'
+DEFUALT_PARK_TEMP = 10
+DEFAULT_PARK_RUNNER = {
+    "surName" : "BISHANGA",
+    "firstName" : "Josiah",
+    "dateOfBirth_yyyy-mm-dd" : "1989-10-14",
+    "parkrunner_id" : "A1619585",
+    "homeParkRun" : "PeelPark",
+    "prBMIDetails" : {
+        "height_m" : 1.75,
+        "weight_kg" : 67.5
+    },
+    "prVO2MaxDetails" : {
+        "resting_hr_bpm" : 45,
+        "max_hr_bpm" : 195,
+        "age" : 32
+    }
+}
+
 def validate_inputs(inputs):
     input_format_err_msg = "invalid format: details, see --help/-h"
     if inputs.time:
         err_msg_t = "{}: {}".format('--time, -t',  input_format_err_msg)
         assert ':' in inputs.time, err_msg_t
 
-def get_pr_details(parkrun_id):
-    pr_json_file = f'data/parkrunner_details_{parkrun_id}.json'
-    with open(pr_json_file, 'r', encoding='utf-8') as fileObj:
-        pr_details = json.load(fileObj)
+def get_pr_details(parkrunner_id):
+    if parkrunner_id == DEFAULT_PARK_RUNNER.get('parkrunner_id'):
+        pr_details = DEFAULT_PARK_RUNNER
+    else:
+        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_details_{parkrunner_id}.json'
+        with open(pr_json_file, 'r', encoding=DEFAULT_ENCODING) as fileObj:
+            pr_details = json.load(fileObj)
     return pr_details
 
 def main():
@@ -39,10 +62,12 @@ def main():
     # python3 ./TodaysParkRun.py --name "Bishanga, EM" --time 00:18:18 --distance 3.1 --space "PocketPark"
     args = argparse.ArgumentParser()
     args.add_argument(
-        '-p', "--parkrun-id", default='A1618583', help='str: ParkRun Number|ID'
+        '-p', "--parkrunner-id", default=DEFAULT_PARK_RUNNER.get('parkrunner_id'),
+        help='str: ParkRun Number|ID'
     )
     args.add_argument(
-        '-n', "--name", default='Bishanga, EM', help='str: Name of Athlete'
+        '-n', "--name", default=DEFAULT_PARK_RUNNER.get('surName'),
+        help='str: Name of Athlete'
     )
     args.add_argument(
         '-d', "--distance", help='float: Distance, miles'
@@ -51,10 +76,12 @@ def main():
         '-t', "--time", help='strtime: RunTime, hh:mm:ss'
     )
     args.add_argument(
-        '-s', "--space", default="PocketPark", help="str: Park"
+        '-s', "--space", default=DEFAULT_PARK_RUNNER.get('homeParkRun'),
+        help="str: Park"
     )
     args.add_argument(
-        '-T', "--temperature", default=10, help="int: Temperature on the day"
+        '-T', "--temperature", default=DEFUALT_PARK_TEMP,
+        help="int: Temperature on the day"
     )
     args.add_argument(
         '-A', "--age", help='int: Age of Athlete, years'
@@ -79,8 +106,13 @@ def main():
     validate_inputs(inputs)
     pprint(inputs)
 
-    park_name = inputs.space
-    parkrunner_name = inputs.name
+    # Prioritize ParkRunner JSON/Dictionary whenever available
+    pr_details = get_pr_details(inputs.parkrunner_id)
+    print('\nDEBUG: pr_details')
+    pprint(pr_details, width=120)
+
+    park_name = pr_details.get('homeParkRun') if pr_details else inputs.space
+    parkrunner_name = pr_details.get('surName') if pr_details else inputs.name
     parkrun_temp = inputs.temperature
 
     # process run details
@@ -104,9 +136,6 @@ def main():
                  )    # pylint: disable=no-value-for-parameter
     else:
         # get parkrunner details as dictionary, from appropriate JSON dataStore
-        pr_details = get_pr_details(inputs.parkrun_id)
-        print('\nDEBUG: pr_details')
-        pprint(pr_details, width=120)
         Runner = ParkRunner(parkrunner_name, parkrunner_details=pr_details)
     print("\n{}: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
     print("\n{}: BMI: {}".format(Runner.name, Runner.get_bmi()))
