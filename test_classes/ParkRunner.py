@@ -13,6 +13,8 @@ Body:
 
 # pylint: disable=missing-function-docstring
 
+DEFAULT_PARKRUN_SB = 1050  # "00:17:30"
+
 class ParkRunner():
     """ The Athlete: key attributes and methods. """
     # Properties:
@@ -32,7 +34,7 @@ class ParkRunner():
         self.bmi = None
         self.t_bmi = None
         self.vo2max_potential = None
-        self.t_parkrun_pb_seconds = 1050  # "00:17:30" 5k Season's Best
+        self.t_parkrun_pb_seconds = DEFAULT_PARKRUN_SB
         self.parkrunner_details = parkrunner_details
 
     # Methods: Add on need-to-add basis.
@@ -82,3 +84,16 @@ class ParkRunner():
         return self.resting_hr
 
     # Other
+    @staticmethod
+    def parse_race_timestr_to_seconds(time_str):
+        """ convert hh:mm:ss into seconds """
+        t_array = time_str.strip().split(':')
+        if len(t_array) != 3:
+            assert "invalid time_str: {}".format(time_str)
+        race_time_seconds = 60 * 60 * int(t_array[0]) + 60 * int(t_array[1]) + int(t_array[2])
+        return race_time_seconds
+
+    def get_pr_parkrun_sb_seconds(self):
+        if self.parkrunner_details:
+            self.t_parkrun_pb_seconds = self.parse_race_timestr_to_seconds(self.parkrunner_details.get('parkrun_sb'))
+        return self.t_parkrun_pb_seconds

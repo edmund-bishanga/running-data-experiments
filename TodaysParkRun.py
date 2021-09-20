@@ -29,6 +29,8 @@ DEFAULT_PARK_RUNNER = {
     "dateOfBirth_yyyy-mm-dd" : "1989-10-14",
     "parkrunner_id" : "A1619585",
     "homeParkRun" : "PeelPark",
+    "parkrun_sb" : "00:18:30",
+    "parkrun_pb" : "00:17:30",
     "prBMIDetails" : {
         "height_m" : 1.75,
         "weight_kg" : 67.5
@@ -137,9 +139,10 @@ def main():
     else:
         # get parkrunner details as dictionary, from appropriate JSON dataStore
         Runner = ParkRunner(parkrunner_name, parkrunner_details=pr_details)
-    print("\n{}: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
-    print("\n{}: BMI: {}".format(Runner.name, Runner.get_bmi()))
-    print("{}: TrefethenBMI: {}".format(Runner.name, Runner.get_trefethen_bmi()))
+    print("\n{}: Ref: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
+    print("{}: Ref: Season's Best ParkRunTime: in hh:mm:ss {}".format(Runner.name, pr_details.get('parkrun_sb')))
+    print("\n{}: Ref: BMI: {}".format(Runner.name, Runner.get_bmi()))
+    print("{}: Ref: TrefethenBMI: {}".format(Runner.name, Runner.get_trefethen_bmi()))
 
     Race = ParkRun(park=Space, runner=Runner, dist_miles=inputs.distance, run_timestr=inputs.time, pace=inputs.pace)
     dist_run_today = inputs.distance if inputs.distance else Race.get_dist_miles()
@@ -151,10 +154,10 @@ def main():
     print("{}: Estimated V02_current: {}".format(Runner.name, Race.get_vo2max_current()))
 
     normalised_effort = round(100 * (Race.get_vo2max_current() / Runner.get_vo2max_potential()), 1)
-    print("{}: Normalised Effort: %V02_max: {}%".format(Runner.name, normalised_effort))
+    print("{}: Normalised Effort: vs V02_max_potential: {}%".format(Runner.name, normalised_effort))
 
-    normalised_5k_effort = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.t_parkrun_pb_seconds) / Runner.t_parkrun_pb_seconds)), 1)
-    print("{}: Normalised Effort: Recent5kTime {}%\n".format(Runner.name, normalised_5k_effort))
+    normalised_5k_effort = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_sb_seconds()) / Runner.get_pr_parkrun_sb_seconds())), 1)
+    print("{}: Normalised Effort: vs ParkRunSBTime {}%\n".format(Runner.name, normalised_5k_effort))
 
 if __name__ == '__main__':
     main()
