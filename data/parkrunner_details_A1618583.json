@@ -7,12 +7,12 @@
     "parkrun_sb" : "00:25:07",
     "parkrun_pb" : "00:19:23",
     "prBMIDetails": {
-        "height_m" : 1.55,
-        "weight_kg" : 67.5
+        "height_m" : 1.63,
+        "weight_kg" : 72.3
     },
     "prVO2MaxDetails": {
         "resting_hr_bpm" : 55,
-        "max_hr_bpm" : 145,
+        "max_hr_bpm" : 150,
         "age" : 60
     }
 }

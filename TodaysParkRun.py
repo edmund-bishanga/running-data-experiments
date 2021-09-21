@@ -119,7 +119,6 @@ def main():
 
     # process run details
     Space = Park(park_name, temperature=parkrun_temp, precipitation=2, surface="mixed", inclination=2)
-    # Space = TarRoad(park_name, temperature=parkrun_temp, precipitation=2, surface='gravel', inclination=2)
     print('\nPark: Venue: {}'.format(Space.venue))
     print('Park: Surface: {}'.format(Space.surface))
     print('Park: Temp: {} degCelcius'.format(Space.get_temperature()))

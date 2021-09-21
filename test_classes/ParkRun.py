@@ -127,6 +127,7 @@ class ParkRun():
             t_min = str(int(float(t_rem_min) * 0.06))
         t_min = '0' + t_min if float(t_min) < 10 else t_min
         t_sec = str((int(t_frac) * 6))
+        t_sec = '0' + t_sec if len(t_sec) < 2 else t_sec
         timestr_hhmmss = ':'.join([t_hr, t_min, t_sec])
         return timestr_hhmmss
 
