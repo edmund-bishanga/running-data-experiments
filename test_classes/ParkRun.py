@@ -152,7 +152,7 @@ class ParkRun():
     # CalculateVO2MaxCurrent: from latest Parkrun time.
     def get_vo2max_current(self):
         if not self.vo2max_current:
-            self.vo2max_current = round(((PACE_ADJUST_5K_12MIN * 36 * 12 * 3.1 * 60 / self.t_parkrun_seconds) - 11.3), 1)
+            self.vo2max_current = round(((PACE_ADJUST_5K_12MIN * 36 * 12 * 3.1 * 60 / self.get_t_parkrun_seconds()) - 11.3), 1)
         return self.vo2max_current
 
     def get_distance_km(self):
