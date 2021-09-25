@@ -49,13 +49,16 @@ def validate_inputs(inputs):
         err_msg_t = "{}: {}".format('--time, -t',  input_format_err_msg)
         assert ':' in inputs.time, err_msg_t
 
-def get_pr_details(parkrunner_id):
-    if parkrunner_id == DEFAULT_PARK_RUNNER.get('parkrunner_id'):
+def get_pr_details(inputs):
+    prunner_id = inputs.parkrunner_id
+    if prunner_id == DEFAULT_PARK_RUNNER.get('parkrunner_id'):
         pr_details = DEFAULT_PARK_RUNNER
     else:
-        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_details_{parkrunner_id}.json'
+        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_details_{prunner_id}.json'
         with open(pr_json_file, 'r', encoding=DEFAULT_ENCODING) as fileObj:
             pr_details = json.load(fileObj)
+    if inputs.space:
+        pr_details['homeParkRun'] = inputs.space
     return pr_details
 
 def main():
@@ -104,13 +107,17 @@ def main():
     args.add_argument(
         '-M', "--max-hr", help='int: Max HeartRate of Athlete, bpm'
     )
+    args.add_argument(
+        '-C', "--covid-feedback", default=False,
+        help='flag: Provide COVID Recovery Feedback'
+    )
     inputs = args.parse_args()
-    # print('\nInput validation:')
+    print('\nInput validation:')
     validate_inputs(inputs)
-    # pprint(inputs)
+    pprint(inputs)
 
     # Prioritize ParkRunner JSON/Dictionary whenever available
-    pr_details = get_pr_details(inputs.parkrunner_id)
+    pr_details = get_pr_details(inputs)
 
     park_name = pr_details.get('homeParkRun') if pr_details else inputs.space
     parkrunner_name = pr_details.get('surName') if pr_details else inputs.name
@@ -137,41 +144,45 @@ def main():
     else:
         # get parkrunner details as dictionary, from appropriate JSON dataStore
         Runner = ParkRunner(parkrunner_name, parkrunner_details=pr_details)
+    ref_str = 'PreCOVID' if inputs.covid_feedback else 'Ref'
     # print("\n{}: Ref: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
     # print("{}: Ref: Season's Best ParkRunTime: in hh:mm:ss {}".format(Runner.name, pr_details.get('parkrun_sb')))
     # print("\n{}: Ref: pBMI: {}".format(Runner.name, Runner.get_bmi()))
-    print(f"\n{Runner.name}: Ref|PreCOVID: BMI: {Runner.get_trefethen_bmi()}")
+    print(f"\n{Runner.name}: {ref_str}: BMI: {Runner.get_trefethen_bmi()}")
 
     Race = ParkRun(park=Space, runner=Runner, dist_miles=inputs.distance, run_timestr=inputs.time, pace=inputs.pace)
     dist_run_today = inputs.distance if inputs.distance else Race.get_dist_miles()
-    print("\n{}: Dist_run_today: in miles {}".format(Runner.name, dist_run_today))
+    print(f"\n{Runner.name}: Dist_run_today: in miles {dist_run_today}")
     strtime_run_today = inputs.time if inputs.time else Race.convert_seconds_to_timestr_hh_mm_ss(Race.get_time_sec())
-    print("{}: This Week's Effort: RunTime: in hh:mm:ss {}".format(Runner.name, strtime_run_today))
-    print("{}: This Week's Estimated Pace: {} min/mile".format(Runner.name, Race.get_race_pace_str()))
+    print(f"{Runner.name}: This Week's Effort: RunTime: in hh:mm:ss {strtime_run_today}")
+    print(f"{Runner.name}: This Week's Estimated Pace: {Race.get_race_pace_str()} min/mile")
 
-    print("\n{}: Ref|PreCOVID: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
-    print("{}: Estimated V02max_current: This Week: {}".format(Runner.name, Race.get_vo2max_current()))
+
+    print(f"\n{Runner.name}: {ref_str}: VO2max_potential: {Runner.get_vo2max_potential()}")
+    print(f"{Runner.name}: Estimated V02max_current: This Week: {Race.get_vo2max_current()}")
     normalised_v02_pdiff = round(100 * (Race.get_vo2max_current() / Runner.get_vo2max_potential()) - 100, 1)
-    print(f"{Runner.name}: This Week's Effort: vs PreCOVID V02_max_potential: {normalised_v02_pdiff}%")
-    orange_v02_str = "V02max Recovery: ORANGE: still Concerning..."
-    green_v02_str = "V02max Recovery: GREEN: OK, getting There..."
-    v02_pThreshold = -12
-    v02max_progress = orange_v02_str if normalised_v02_pdiff < v02_pThreshold else green_v02_str
-    print(f"{Runner.name}: This Week's Effort: vs preCOVID V02_max_potential: {v02max_progress}")
+    if inputs.covid_feedback:
+        print(f"{Runner.name}: This Week's Effort: vs PreCOVID V02_max_potential: {normalised_v02_pdiff}%")
+        orange_v02_str = "V02max Recovery: ORANGE: still Concerning..."
+        green_v02_str = "V02max Recovery: GREEN: OK, getting There..."
+        v02_pThreshold = -12
+        v02max_progress = orange_v02_str if normalised_v02_pdiff < v02_pThreshold else green_v02_str
+        print(f"{Runner.name}: This Week's Effort: vs preCOVID V02_max_potential: {v02max_progress}")
 
-    # normalised_5k_effort = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_sb_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
-    # print(f"{Runner.name}: This Week's Effort: vs Season's Best: {normalised_5k_effort}%\n")
+    normalised_5k_effort = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_sb_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
+    print(f"{Runner.name}: This Week's Effort: vs Season's Best: {normalised_5k_effort}%\n")
 
-    print("\n{}: This Week's Equivalent ParkRun5kTime: in hh:mm:ss {}".format(Runner.name, Race.get_t_parkrun_timestr()))
-    print(f"{Runner.name}: Last 4 Weeks' Average ParkRun5kTime: in hh:mm:ss {pr_details.get('parkrun_last4wks')}")
-    progressed_5k_pdiff = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_l4wks_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
-    print(f"{Runner.name}: This Week's Effort: vs Last 4 Weeks' Average: percentageDiff: {progressed_5k_pdiff}%")
+    if inputs.covid_feedback:
+        print("\n{}: This Week's Equivalent ParkRun5kTime: in hh:mm:ss {}".format(Runner.name, Race.get_t_parkrun_timestr()))
+        print(f"{Runner.name}: Last 4 Weeks' Average ParkRun5kTime: in hh:mm:ss {pr_details.get('parkrun_last4wks')}")
+        progressed_5k_pdiff = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_l4wks_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
+        print(f"{Runner.name}: This Week's Effort: vs Last 4 Weeks' Average: percentageDiff: {progressed_5k_pdiff}%")
 
-    red_warning_str = "RED: REGRESSED: Please Consult GP Again..."
-    green_ok_str = "GREEN: OK: Making Progress... Keep it Up..."
-    parkrun5k_pThreshold = -10
-    progress = red_warning_str if progressed_5k_pdiff < parkrun5k_pThreshold else green_ok_str
-    print(f"{Runner.name}: This Week's Effort: vs Last 4 Weeks: Verdict: {progress}\n")
+        red_warning_str = "RED: REGRESSED: Please Consult GP Again..."
+        green_ok_str = "GREEN: OK: Making Progress... Keep it Up..."
+        parkrun5k_pThreshold = -10
+        progress = red_warning_str if progressed_5k_pdiff < parkrun5k_pThreshold else green_ok_str
+        print(f"{Runner.name}: This Week's Effort: vs Last 4 Weeks: Verdict: {progress}\n")
 
 if __name__ == '__main__':
     main()
