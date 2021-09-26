@@ -46,7 +46,7 @@ DEFAULT_PARK_RUNNER = {
 def validate_inputs(inputs):
     input_format_err_msg = "invalid format: details, see --help/-h"
     if inputs.time:
-        err_msg_t = "{}: {}".format('--time, -t',  input_format_err_msg)
+        err_msg_t = "{}: {}".format('--time, -t', input_format_err_msg)
         assert ':' in inputs.time, err_msg_t
 
 def get_pr_details(inputs):
@@ -137,10 +137,10 @@ def main():
         """
         assert inputs.height and inputs.weight and inputs.resting_hr and inputs.max_hr, err_msg
         Runner = ParkRunner(
-                    parkrunner_name, age=int(inputs.age),
-                    height=float(inputs.height), weight=float(inputs.weight),
-                    resting_hr=int(inputs.resting_hr), max_hr=int(inputs.max_hr)
-                 )    # pylint: disable=no-value-for-parameter
+                    parkrunner_name, age=int(inputs.age), height=float(inputs.height),
+                    weight=float(inputs.weight), resting_hr=int(inputs.resting_hr),
+                    max_hr=int(inputs.max_hr)
+                )    # pylint: disable=no-value-for-parameter
     else:
         # get parkrunner details as dictionary, from appropriate JSON dataStore
         Runner = ParkRunner(parkrunner_name, parkrunner_details=pr_details)
@@ -156,6 +156,7 @@ def main():
     strtime_run_today = inputs.time if inputs.time else Race.convert_seconds_to_timestr_hh_mm_ss(Race.get_time_sec())
     print(f"{Runner.name}: This Week's Effort: RunTime: in hh:mm:ss {strtime_run_today}")
     print(f"{Runner.name}: This Week's Estimated Pace: {Race.get_race_pace_str()} min/mile")
+    print(f"{Runner.name}: This Week's Equivalent ParkRun5kTime: in hh:mm:ss {Race.get_t_parkrun_timestr()}")
 
 
     print(f"\n{Runner.name}: {ref_str}: VO2max_potential: {Runner.get_vo2max_potential()}")
@@ -170,12 +171,13 @@ def main():
         print(f"{Runner.name}: This Week's Effort: vs preCOVID V02_max_potential: {v02max_progress}")
 
     normalised_5k_effort = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_sb_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
+    normalised_5k_effort = '+' + str(normalised_5k_effort) if normalised_5k_effort > 0 else str(normalised_5k_effort)
     print(f"{Runner.name}: This Week's Effort: vs Season's Best: {normalised_5k_effort}%\n")
 
     if inputs.covid_feedback:
-        print("\n{}: This Week's Equivalent ParkRun5kTime: in hh:mm:ss {}".format(Runner.name, Race.get_t_parkrun_timestr()))
         print(f"{Runner.name}: Last 4 Weeks' Average ParkRun5kTime: in hh:mm:ss {pr_details.get('parkrun_last4wks')}")
         progressed_5k_pdiff = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_l4wks_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
+        progressed_5k_pdiff = '+' + str(progressed_5k_pdiff) if progressed_5k_pdiff > 0 else str(progressed_5k_pdiff)
         print(f"{Runner.name}: This Week's Effort: vs Last 4 Weeks' Average: percentageDiff: {progressed_5k_pdiff}%")
 
         red_warning_str = "RED: REGRESSED: Please Consult GP Again..."
@@ -183,6 +185,7 @@ def main():
         parkrun5k_pThreshold = -10
         progress = red_warning_str if progressed_5k_pdiff < parkrun5k_pThreshold else green_ok_str
         print(f"{Runner.name}: This Week's Effort: vs Last 4 Weeks: Verdict: {progress}\n")
+
 
 if __name__ == '__main__':
     main()
