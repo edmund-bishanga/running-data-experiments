@@ -43,29 +43,7 @@ DEFAULT_PARK_RUNNER = {
     }
 }
 
-def validate_inputs(inputs):
-    input_format_err_msg = "invalid format: details, see --help/-h"
-    if inputs.time:
-        err_msg_t = "{}: {}".format('--time, -t', input_format_err_msg)
-        assert ':' in inputs.time, err_msg_t
-
-def get_pr_details(inputs):
-    prunner_id = inputs.parkrunner_id
-    if prunner_id == DEFAULT_PARK_RUNNER.get('parkrunner_id'):
-        pr_details = DEFAULT_PARK_RUNNER
-    else:
-        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_details_{prunner_id}.json'
-        with open(pr_json_file, 'r', encoding=DEFAULT_ENCODING) as fileObj:
-            pr_details = json.load(fileObj)
-    if inputs.space:
-        pr_details['homeParkRun'] = inputs.space
-    return pr_details
-
-def main():
-    """ Interactive function: Inputs event details, provides normalised insights. """
-    # Example input format
-    # python3 ./TodaysParkRun.py -n "Bishanga, EM" -t 00:18:18 -d 3.1 -s "PocketPark"
-    # python3 ./TodaysParkRun.py --name "Bishanga, EM" --time 00:18:18 --distance 3.1 --space "PocketPark"
+def parse_inputs():
     args = argparse.ArgumentParser()
     args.add_argument(
         '-p', "--parkrunner-id", default=DEFAULT_PARK_RUNNER.get('parkrunner_id'),
@@ -112,9 +90,45 @@ def main():
         help='flag: Provide COVID Recovery Feedback'
     )
     inputs = args.parse_args()
+    return inputs
+
+def validate_inputs(inputs):
     print('\nInput validation:')
-    validate_inputs(inputs)
+    input_format_err_msg = "invalid format: details, see --help/-h"
+    if inputs.time:
+        err_msg_t = "{}: {}".format('--time, -t', input_format_err_msg)
+        assert ':' in inputs.time, err_msg_t
     pprint(inputs)
+
+def get_pr_details(inputs):
+    prunner_id = inputs.parkrunner_id
+    if prunner_id == DEFAULT_PARK_RUNNER.get('parkrunner_id'):
+        pr_details = DEFAULT_PARK_RUNNER
+    else:
+        # read an appropriate row/JSON from the parkrunners_db/CSV datastore
+        import csv
+        csv_input_file = './data/parkrunners_db.csv'
+        with open(csv_input_file, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                pprint(row)
+        # or read from individual parkrunner JSON file
+        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_details_{prunner_id}.json'
+        with open(pr_json_file, 'r', encoding=DEFAULT_ENCODING) as fileObj:
+            pr_details = json.load(fileObj)
+    print(f'DEBUG: fn::get_pr_details: pr_details before: \n{pr_details}')
+    if inputs.space:
+        pr_details['homeParkRun'] = inputs.space
+    print(f'DEBUG: fn::get_pr_details: pr_details after: \n{pr_details}')
+    return pr_details
+
+def main():
+    """ Interactive function: Inputs event details, provides normalised insights. """
+    # Example input format
+    # python3 ./TodaysParkRun.py -n "Bishanga, EM" -t 00:18:18 -d 3.1 -s "PocketPark"
+    # python3 ./TodaysParkRun.py --name "Bishanga, EM" --time 00:18:18 --distance 3.1 --space "PocketPark"
+    inputs = parse_inputs()
+    validate_inputs(inputs)
 
     # Prioritize ParkRunner JSON/Dictionary whenever available
     pr_details = get_pr_details(inputs)
