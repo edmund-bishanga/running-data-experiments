@@ -10,11 +10,16 @@ Interactive Script:
 # pylint: disable=invalid-name
 # pylint: disable=unused-import
 # pylint: disable=missing-function-docstring
+# pylint: disable=use-dict-literal
 
 import argparse
+import csv
 import json
 import sys
+from datetime import datetime
 from pprint import pprint
+
+from dateutil.relativedelta import relativedelta
 
 from test_classes.Park import Park, TarRoad
 from test_classes.ParkRun import ParkRun
@@ -46,12 +51,10 @@ DEFAULT_PARK_RUNNER = {
 def parse_inputs():
     args = argparse.ArgumentParser()
     args.add_argument(
-        '-p', "--parkrunner-id", default=DEFAULT_PARK_RUNNER.get('parkrunner_id'),
-        help='str: ParkRun Number|ID'
+        '-p', "--parkrunner-id", help='str: ParkRun Number|ID'
     )
     args.add_argument(
-        '-n', "--name", default=DEFAULT_PARK_RUNNER.get('surName'),
-        help='str: Name of Athlete'
+        '-n', "--name", help='str: Name of Athlete'
     )
     args.add_argument(
         '-d', "--distance", help='float: Distance, miles'
@@ -60,8 +63,7 @@ def parse_inputs():
         '-t', "--time", help='strtime: RunTime, hh:mm:ss'
     )
     args.add_argument(
-        '-s', "--space", default=DEFAULT_PARK_RUNNER.get('homeParkRun'),
-        help="str: Park"
+        '-s', "--space", help="str: Park"
     )
     args.add_argument(
         '-T', "--temperature", default=DEFUALT_PARK_TEMP,
@@ -100,26 +102,73 @@ def validate_inputs(inputs):
         assert ':' in inputs.time, err_msg_t
     pprint(inputs)
 
-def get_pr_details(inputs):
-    prunner_id = inputs.parkrunner_id
-    if prunner_id == DEFAULT_PARK_RUNNER.get('parkrunner_id'):
+def parse_pr_name(inputs_name):
+    # parse ParkRunner Name: 'First Middle SurName'
+    # 'Edmund M Bishanga': 'Edmund', 'M', 'BISHANGA'
+    # 'Bishanga': '', '', Bishanga
+    # 'John Taylor': 'John', '', 'Taylor'
+    pr_names = inputs_name.split(' ')
+    surName = pr_names[-1]
+    firstName = pr_names[0] if len(pr_names) > 1 else ''
+    middleName = pr_names[-2] if len(pr_names) > 2 else ''
+    return (firstName, middleName, surName)
+
+def augment_parkrunner_details(pr_details, inputs, using_csv):
+    if inputs.space:
+        pr_details['todaysParkRun'] = inputs.space
+    if not pr_details.get('todaysParkRun'):
+        pr_details['todaysParkRun'] = pr_details.get('homeParkRun')
+
+    if inputs.name:
+        firstName, middleName, surName = parse_pr_name(inputs.name)
+        pr_details['firstName'] = firstName
+        pr_details['middleName'] = middleName
+        pr_details['surName'] = surName
+
+    if pr_details.get('dateOfBirth_yyyy-mm-dd'):
+        birthDate = datetime.strptime(pr_details.get('dateOfBirth_yyyy-mm-dd'), "%Y-%m-%d")
+        age = relativedelta(datetime.today(), birthDate).years
+        pr_details['age'] = age
+
+    if using_csv:
+        pr_details['prBMIDetails'] = {
+            'height_m': float(pr_details.get('height_m')),
+            'weight_kg': float(pr_details.get('weight_kg'))
+        }
+        pr_details['prVO2MaxDetails'] = {
+            "resting_hr_bpm" : int(pr_details.get('resting_hr_bpm')),
+            "max_hr_bpm" : int(pr_details.get('max_hr_bpm')),
+            "age" : int(pr_details.get('age'))
+        }
+    print(f'\nDEBUG: fn::augment_parkrunner_details: pr_details after: \n{pr_details}')
+    return pr_details
+
+def get_parkrunner_details(inputs):
+    pr_details = dict()
+    csv_input_file = './data/parkrunners_db.csv'
+
+    using_csv = bool(csv_input_file and inputs.parkrunner_id)
+    print(f'\nDEBUG: using_csv: {using_csv}')
+
+    if not inputs.parkrunner_id:
         pr_details = DEFAULT_PARK_RUNNER
-    else:
+    elif using_csv:
         # read an appropriate row/JSON from the parkrunners_db/CSV datastore
-        import csv
-        csv_input_file = './data/parkrunners_db.csv'
-        with open(csv_input_file, newline='') as csvfile:
+        with open(csv_input_file, newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                pprint(row)
+                if row.get('parkrunner_id') == inputs.parkrunner_id:
+                    pr_details = row
+    else:
         # or read from individual parkrunner JSON file
-        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_details_{prunner_id}.json'
+        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_details_{inputs.parkrunner_id}.json'
         with open(pr_json_file, 'r', encoding=DEFAULT_ENCODING) as fileObj:
             pr_details = json.load(fileObj)
-    print(f'DEBUG: fn::get_pr_details: pr_details before: \n{pr_details}')
-    if inputs.space:
-        pr_details['homeParkRun'] = inputs.space
-    print(f'DEBUG: fn::get_pr_details: pr_details after: \n{pr_details}')
+    print(f'\nDEBUG: fn::get_parkrunner_details: pr_details before: \n{pr_details}')
+
+    # Augment parkRunner Data/Info
+    pr_details = augment_parkrunner_details(pr_details, inputs, using_csv)
+
     return pr_details
 
 def main():
@@ -131,10 +180,11 @@ def main():
     validate_inputs(inputs)
 
     # Prioritize ParkRunner JSON/Dictionary whenever available
-    pr_details = get_pr_details(inputs)
+    pr_details = get_parkrunner_details(inputs)
+    assert pr_details, 'pr_details: Missing parkRunner Details: see --help/-h'
 
-    park_name = pr_details.get('homeParkRun') if pr_details else inputs.space
-    parkrunner_name = pr_details.get('surName') if pr_details else inputs.name
+    park_name = pr_details.get('todaysParkRun')
+    parkrunner_name = pr_details.get('surName')
     parkrun_temp = inputs.temperature
 
     # process run details
