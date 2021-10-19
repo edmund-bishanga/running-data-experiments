@@ -36,7 +36,7 @@ class ParkRunner():
         self.t_bmi = None
         self.vo2max_potential = None
         self.t_parkrun_sb_seconds = DEFAULT_PARKRUN_SB
-        self.t_parkrun_l4wks_seconds = None
+        self.t_parkrun_4wks_seconds = None
         self.parkrunner_details = parkrunner_details
 
     # PARKRUNNER: METHODS: Add on need-to-add basis.
@@ -103,9 +103,9 @@ class ParkRunner():
             )
         return self.t_parkrun_sb_seconds
 
-    def get_pr_parkrun_l4wks_seconds(self):
+    def get_pr_parkrun_4wks_seconds(self):
         if self.parkrunner_details:
-            self.t_parkrun_l4wks_seconds = self.parse_race_timestr_to_seconds(
+            self.t_parkrun_4wks_seconds = self.parse_race_timestr_to_seconds(
                 self.parkrunner_details.get('parkrun_last4wks')
             )
-        return self.t_parkrun_l4wks_seconds
+        return self.t_parkrun_4wks_seconds

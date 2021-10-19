@@ -242,7 +242,7 @@ def main():
 
     if inputs.covid_feedback:
         print(f"{Runner.name}: Last 4 Weeks' Average ParkRun5kTime: in hh:mm:ss {pr_details.get('parkrun_last4wks')}")
-        progressed_5k_pdiff = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_l4wks_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
+        progressed_5k_pdiff = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_4wks_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
         s_progressed_5k_pdiff = '+' + str(progressed_5k_pdiff) if progressed_5k_pdiff > 0 else str(progressed_5k_pdiff)
         print(f"{Runner.name}: This Week's Effort: vs Last 4 Weeks' Average: percentageDiff: {s_progressed_5k_pdiff}%")
 
