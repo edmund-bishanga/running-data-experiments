@@ -26,25 +26,28 @@ from test_classes.ParkRun import ParkRun
 from test_classes.ParkRunner import ParkRunner
 
 DEFAULT_DATA_DIR = './data'
+CSV_DATASTORE = f'{DEFAULT_DATA_DIR}/parkrunners_db.csv'
 DEFAULT_ENCODING = 'utf-8'
 DEFUALT_PARK_TEMP = 10
 DEFAULT_PARK_RUNNER = {
-    "surName" : "BISHANGA",
-    "firstName" : "Josiah",
-    "dateOfBirth_yyyy-mm-dd" : "1989-10-14",
-    "parkrunner_id" : "A1619585",
-    "homeParkRun" : "PeelPark",
-    "parkrun_last4wks" : "00:32:23",
-    "parkrun_sb" : "00:18:30",
-    "parkrun_pb" : "00:17:30",
-    "prBMIDetails" : {
-        "height_m" : 1.75,
-        "weight_kg" : 67.5
+    "surName": "BISHANGA",
+    "middleName": "E",
+    "firstName": "Josiah",
+    "dateOfBirth_yyyy-mm-dd": "1989-10-14",
+    "parkrunner_id": "A1619585",
+    "homeParkRun": "PeelPark",
+    "todaysParkRun": "WorsleyWoodsPark",
+    "parkrun_last4wks": "00:32:23",
+    "parkrun_sb": "00:18:30",
+    "parkrun_pb": "00:17:30",
+    "prBMIDetails": {
+        "height_m": 1.75,
+        "weight_kg": 67.5
     },
-    "prVO2MaxDetails" : {
-        "resting_hr_bpm" : 45,
-        "max_hr_bpm" : 195,
-        "age" : 32
+    "prVO2MaxDetails": {
+        "resting_hr_bpm": 45,
+        "max_hr_bpm": 200,
+        "age": 32
     }
 }
 
@@ -145,16 +148,15 @@ def augment_parkrunner_details(pr_details, inputs, using_csv):
 
 def get_parkrunner_details(inputs):
     pr_details = dict()
-    csv_input_file = './data/parkrunners_db.csv'
 
-    using_csv = bool(csv_input_file and inputs.parkrunner_id)
+    using_csv = bool(CSV_DATASTORE and inputs.parkrunner_id)
     print(f'\nDEBUG: using_csv: {using_csv}')
 
     if not inputs.parkrunner_id:
         pr_details = DEFAULT_PARK_RUNNER
     elif using_csv:
         # read an appropriate row/JSON from the parkrunners_db/CSV datastore
-        with open(csv_input_file, newline='', encoding='utf-8') as csvfile:
+        with open(CSV_DATASTORE, newline='', encoding=DEFAULT_ENCODING) as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 if row.get('parkrunner_id') == inputs.parkrunner_id:
