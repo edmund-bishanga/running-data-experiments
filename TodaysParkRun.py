@@ -101,7 +101,7 @@ def validate_inputs(inputs):
     print('\nInput validation:')
     input_format_err_msg = "invalid format: details, see --help/-h"
     if inputs.time:
-        err_msg_t = "{}: {}".format('--time, -t', input_format_err_msg)
+        err_msg_t = f"--time, -t: {input_format_err_msg}"
         assert ':' in inputs.time, err_msg_t
     pprint(inputs)
 
@@ -191,9 +191,9 @@ def main():
 
     # process run details
     Space = Park(park_name, temperature=parkrun_temp, precipitation=2, surface="mixed", inclination=2)
-    print('\nPark: Venue: {}'.format(Space.venue))
-    print('Park: Surface: {}'.format(Space.surface))
-    print('Park: Temp: {} degCelcius'.format(Space.get_temperature()))
+    print(f'\nPark: Venue: {Space.venue}')
+    print(f'Park: Surface: {Space.surface}')
+    print(f'Park: Temp: {Space.get_temperature()} degCelcius')
 
     if inputs.age or inputs.weight:
         err_msg = """
