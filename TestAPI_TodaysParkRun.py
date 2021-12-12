@@ -12,20 +12,19 @@ Interactive Script:
 import argparse
 import json
 import re
-import sys
 from pprint import pprint
 
 import requests
 
 def validate_api_cmd(cmd):
     print('validate: api_cmd:'); pprint(cmd)
-    err_msg = 'invalid api_cmd: {}'.format(cmd)
+    err_msg = f'invalid api_cmd: {cmd}'
     assert 'python ' in cmd, err_msg
 
     reg_str = r"\w+ .\/Today"
     matched = re.search(reg_str, cmd)
-    print('DEBUG: matched'); pprint(matched)
-    reg_err_msg = 'invalid api_cmd format: expected regex: {} actual: {}'.format(reg_str, cmd)
+    print('\nDEBUG: matched'); pprint(matched)
+    reg_err_msg = f'invalid api_cmd format: expected regex: {reg_str} actual: {cmd}'
     assert matched, reg_err_msg
 
 def run_api_check(relevant_inputs):
@@ -36,7 +35,7 @@ def run_api_check(relevant_inputs):
         api_cmd = 'python ./TodaysParkRun.py '
         api_cmd_suffix = relevant_inputs[key][1]
         api_cmd = api_cmd + " ".join(api_cmd_suffix)
-        print('API_cmd: "{}"'.format(api_cmd))
+        print(f'API_cmd: "{api_cmd}"')
 
         validate_api_cmd(api_cmd)
 
@@ -53,7 +52,7 @@ def run_api_check(relevant_inputs):
         if response["status_code"] == 200:
             outcome = 'PASS'
         outputs[key].append(outcome)
-        assert outcome == relevant_inputs[key][-1], "unexpected result: {}".format(key)
+        assert outcome == relevant_inputs[key][-1], f"unexpected result: {key}"
     print('\nDEBUG: outputs'); pprint(outputs)
     return outputs
 
@@ -82,7 +81,8 @@ def main():
     # Input validation
     args = argparse.ArgumentParser()
     args.add_argument(
-        '-f', "--input-file", default='./data/InputData_TestTodaysParkRun.json', help='str: path to JSON inputs file'
+        '-f', "--input-file", default='./data/InputData_TestTodaysParkRun.json',
+        help='str: path to JSON inputs file'
     )
     inputs = args.parse_args()
     print('\nInput validation:')
