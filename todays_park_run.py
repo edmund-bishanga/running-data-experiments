@@ -21,11 +21,11 @@ from pprint import pprint
 
 from dateutil.relativedelta import relativedelta
 
-from test_classes.Park import Park, TarRoad
-from test_classes.ParkRun import ParkRun
-from test_classes.ParkRunner import ParkRunner
+from test_classes.park import Park
+from test_classes.park_run import ParkRun
+from test_classes.park_runner import ParkRunner
 
-DEFAULT_DATA_DIR = './data'
+DEFAULT_DATA_DIR = './test_data'
 CSV_DATASTORE = f'{DEFAULT_DATA_DIR}/parkrunners_db.csv'
 DEFAULT_ENCODING = 'utf-8'
 DEFUALT_PARK_TEMP = 10

@@ -30,7 +30,7 @@ import scipy.stats as stats
 #    Possible formats: .csv, .txt
 #    Parsing Data
 #    into Appropriate Data Structure e.g. Dictionaries, Named Tuples, Lists etc.
-runfile = "./data/HalfMarathonBishangaEdmund.csv"
+runfile = "./test_data/half_marathon_bishanga_edmund.csv"
 
 def get_file_contents(filepath):
     with open(filepath, 'r') as f:

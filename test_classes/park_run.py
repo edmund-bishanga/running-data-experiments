@@ -16,8 +16,8 @@ Ingredients:
 
 from pprint import pprint
 
-from test_classes.Park import Park
-from test_classes.ParkRunner import ParkRunner
+from test_classes.park import Park
+from test_classes.park_runner import ParkRunner
 
 PACE_ADJUST_5K_12MIN = 1.03
 KMS_PER_MILE = 1.60934
