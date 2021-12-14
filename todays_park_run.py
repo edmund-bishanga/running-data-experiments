@@ -10,7 +10,6 @@ Interactive Script:
 # pylint: disable=invalid-name
 # pylint: disable=unused-import
 # pylint: disable=missing-function-docstring
-# pylint: disable=use-dict-literal
 
 import argparse
 import csv
