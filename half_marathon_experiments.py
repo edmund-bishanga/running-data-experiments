@@ -50,9 +50,9 @@ def collect_buffered_raw_data(unltd_raw_data_gen, max_length):
         # get next raw data val, until buffer limit
         while len(ltd_raw_data) < max_length:
             ltd_raw_data.append(next(unltd_raw_data_gen))
-    except StopIteration as drained:
+    except StopIteration as IterDone:
         print(f'\nINFO: raw data emptied out: {len(ltd_raw_data)}')
-        pprint(StopIteration)        
+        pprint(IterDone)
     finally:
         length_raw_data = len(ltd_raw_data)
         print(f'\nDEBUG: raw data length harvested: {len(ltd_raw_data)}')
@@ -61,12 +61,12 @@ def collect_buffered_raw_data(unltd_raw_data_gen, max_length):
 def get_csv_column_raw_data(csv_file, heading, max_length=100):
     rows = (line for line in open(csv_file, 'r', encoding='utf-8'))
     row_items = (row.rstrip().split(',') for row in rows)
-    
+
     # validate requested heading
     heading_keys = next(row_items)
     print(f'\nDEBUG: headings: {heading_keys}')
     assert heading in heading_keys, f'MissingHeadingErr: {heading} not in {heading_keys}'
-    
+
     # get requested column data: raw
     row_dicts = (dict(zip(heading_keys, vals)) for vals in row_items)
     unltd_raw_data_gen = (
@@ -97,7 +97,6 @@ def main():
     # get raw column data: 'times'
     times_heading = 'time (hh:mm:ss)'
     raw_parkrun_times = get_csv_column_raw_data(parkrun_csv_file, times_heading, max_length=30)
-    print('\nDEBUG: raw_parkrun_times'); pprint(raw_parkrun_times)
     # transform the raw data: for statistical informational analysis
     # times: str -> int|seconds
     seconds_parkrun_times = transform_raw_to_int(raw_parkrun_times, times_heading)
@@ -181,6 +180,7 @@ def main():
     print('variance: {}'.format(variance))
 
     x_data = sorted(y_values)
+    # pylint: disable=line-too-long
     pyplot.plot(
         x_data,
         1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (x_data - mean)**2 / (2 * std_dev**2) ),
