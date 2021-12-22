@@ -1,8 +1,14 @@
 #!/usr/bin/python
 
-""" Unit Tests for methods in Class: park_run.ParkRun. """
+"""
+Unit Tests for methods in Class: park_run.ParkRun.
++ run unit test on cmdline:
+  python -m unittest discover -v -s <test_dir>
++ or via pytest:
+  python -m pytest -v <test_dir>
+"""
 
-import unittest
+import pytest
 from unittest import TestCase
 from test_classes.park import Park
 from test_classes.park_run import ParkRun
@@ -17,11 +23,16 @@ class TestParkRunMethods(TestCase):
         self.parkrun = ParkRun(self.park, self.parkrunner, dist_miles=3.16, run_timestr='00:19:30')
 
     def test_get_dist_miles(self):
-        TestCase.assertEqual(self, first=3.16, second=self.parkrun.get_dist_miles())
+        first = 3.16
+        second = self.parkrun.get_dist_miles()
+        TestCase.assertEqual(self, first, second)
 
     def test_parse_race_timestr_to_seconds(self):
         # input: '00:20:00', expOutput: 1200
-        TestCase.assertEqual(self, 1200, self.parkrun.parse_race_timestr_to_seconds('00:20:00'))
+        equiv_parts = [('00:20:00', 1200), ('00:00:01', 1), ('03:20:00', 12000)]
+        for t_str, exp_seconds in equiv_parts:
+            result = self.parkrun.parse_race_timestr_to_seconds(t_str)
+            TestCase.assertEqual(self, exp_seconds, result)
 
     def tearDown(self):
         # clean up after unittest run

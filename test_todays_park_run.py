@@ -58,7 +58,7 @@ def run_args_check(relevant_inputs):
     return outputs
 
 
-def test_args_name(inputs_json_file):
+def verify_args_names(inputs_json_file):
     # read json input
     with open(inputs_json_file, 'r') as inputs_file:
         inputs_data = json.load(inputs_file)
@@ -90,7 +90,7 @@ def main():
     pprint(inputs)
 
     # Test Data-Driven Argss
-    test_args_name(inputs.input_file)
+    verify_args_names(inputs.input_file)
 
 
 if __name__ == '__main__':
