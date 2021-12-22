@@ -190,6 +190,15 @@ def main():
 
     # process run details
     Space = Park(park_name, temperature=parkrun_temp, precipitation=2, surface="mixed", inclination=2)
+
+    # logging experiment
+    # message tags: info, warning, debug, error
+    import logging
+    logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%a/%d.%b.%Y %H:%M:%S')
+    logging.info('event ABC: var_name: %s was logged.', Space.venue)
+    logging.warning(f'Park: Venue: %s', Space.venue)
+    logging.debug(f'Park: Venue: %s', Space.venue)
+
     print(f'\nPark: Venue: {Space.venue}')
     print(f'Park: Surface: {Space.surface}')
     print(f'Park: Temp: {Space.get_temperature()} degCelcius')
