@@ -169,40 +169,10 @@ def get_parkrunner_details(inputs):
 
     # Augment parkRunner Data/Info
     pr_details = augment_parkrunner_details(pr_details, inputs, using_csv)
-
     return pr_details
 
-def main():
-    """ Interactive function: Inputs event details, provides normalised insights. """
-    # Example input format
-    # python3 ./TodaysParkRun.py -n "Bishanga, EM" -t 00:18:18 -d 3.1 -s "PocketPark"
-    # python3 ./TodaysParkRun.py --name "Bishanga, EM" --time 00:18:18 --distance 3.1 --space "PocketPark"
-    inputs = parse_inputs()
-    validate_inputs(inputs)
-
-    # Prioritize ParkRunner JSON/Dictionary whenever available
-    pr_details = get_parkrunner_details(inputs)
-    assert pr_details, 'pr_details: Missing parkRunner Details: see --help/-h'
-
-    park_name = pr_details.get('todaysParkRun')
+def update_runner_details(inputs, pr_details):
     parkrunner_name = pr_details.get('surName')
-    parkrun_temp = inputs.temperature
-
-    # process run details
-    Space = Park(park_name, temperature=parkrun_temp, precipitation=2, surface="mixed", inclination=2)
-
-    # logging experiment
-    # message tags: info, warning, debug, error
-    import logging
-    logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%a/%d.%b.%Y %H:%M:%S')
-    logging.info('event ABC: var_name: %s was logged.', Space.venue)
-    logging.warning(f'Park: Venue: %s', Space.venue)
-    logging.debug(f'Park: Venue: %s', Space.venue)
-
-    print(f'\nPark: Venue: {Space.venue}')
-    print(f'Park: Surface: {Space.surface}')
-    print(f'Park: Temp: {Space.get_temperature()} degCelcius')
-
     if inputs.age or inputs.weight:
         err_msg = """
             For BMI, VO2_max analysis, please provide ALL:
@@ -218,13 +188,28 @@ def main():
     else:
         # get parkrunner details as dictionary, from appropriate JSON dataStore
         Runner = ParkRunner(parkrunner_name, parkrunner_details=pr_details)
-    ref_str = 'PreCOVID' if inputs.covid_feedback else 'Ref'
+    return Runner
+
+def output_park_summary(Space):
+    # logging experiment
+    # message tags: info, warning, debug, error
+    import logging  # pylint: disable=import-outside-toplevel
+    logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%a/%d.%b.%Y %H:%M:%S')
+    logging.info('event ABC: var_name: %s was logged.', Space.venue)
+    logging.warning('Park: Venue: %s', Space.venue)
+    logging.debug('Park: Venue: %s', Space.venue)
+
+    print(f'\nPark: Venue: {Space.venue}')
+    print(f'Park: Surface: {Space.surface}')
+    print(f'Park: Temp: {Space.get_temperature()} degCelcius')
+
+def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
     # print("\n{}: Ref: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
     # print("{}: Ref: Season's Best ParkRunTime: in hh:mm:ss {}".format(Runner.name, pr_details.get('parkrun_sb')))
     # print("\n{}: Ref: pBMI: {}".format(Runner.name, Runner.get_bmi()))
+    ref_str = 'PreCOVID' if inputs.covid_feedback else 'Ref'
     print(f"\n{Runner.name}: {ref_str}: BMI: {Runner.get_trefethen_bmi()}")
 
-    Race = ParkRun(park=Space, runner=Runner, dist_miles=inputs.distance, run_timestr=inputs.time, pace=inputs.pace)
     dist_run_today = inputs.distance if inputs.distance else Race.get_dist_miles()
     print(f"\n{Runner.name}: Dist_run_today: in miles {dist_run_today}")
     strtime_run_today = inputs.time if inputs.time else Race.convert_seconds_to_timestr_hh_mm_ss(Race.get_time_sec())
@@ -259,6 +244,28 @@ def main():
         parkrun5k_pThreshold = -10
         progress = red_warning_str if progressed_5k_pdiff < parkrun5k_pThreshold else green_ok_str
         print(f"{Runner.name}: This Week's Effort: vs Last 4 Weeks: Verdict: {progress}\n")
+
+
+def main():
+    """ Interactive function: Inputs event details, provides normalised insights. """
+    # Example input format
+    # python3 ./TodaysParkRun.py -n "Bishanga, EM" -t 00:18:18 -d 3.1 -s "PocketPark"
+    # python3 ./TodaysParkRun.py --name "Bishanga, EM" --time 00:18:18 --distance 3.1 --space "PocketPark"
+    inputs = parse_inputs()
+    validate_inputs(inputs)
+
+    # Prioritize ParkRunner JSON/Dictionary whenever available
+    pr_details = get_parkrunner_details(inputs)
+    assert pr_details, 'pr_details: Missing parkRunner Details: see --help/-h'
+
+    # process ParkRun details
+    park_name = pr_details.get('todaysParkRun')
+    Space = Park(park_name, temperature=inputs.temperature, precipitation=2, surface="mixed", inclination=2)
+    output_park_summary(Space)
+
+    Runner = update_runner_details(inputs, pr_details)
+    Race = ParkRun(park=Space, runner=Runner, dist_miles=inputs.distance, run_timestr=inputs.time, pace=inputs.pace)
+    output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race)
 
 
 if __name__ == '__main__':

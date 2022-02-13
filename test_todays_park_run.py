@@ -70,7 +70,8 @@ def verify_args_names(inputs_json_file):
     for key in inputs_data:
         if option in inputs_data[key]:
             relevant_inputs[key] = inputs_data[key]
-    print('\nDEBUG: relevant_inputs'); pprint(relevant_inputs)
+    print('\nDEBUG: relevant_inputs')
+    pprint(relevant_inputs)
 
     # run test
     run_args_check(relevant_inputs)
