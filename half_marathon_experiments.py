@@ -100,7 +100,8 @@ def main():
     # transform the raw data: for statistical informational analysis
     # times: str -> int|seconds
     seconds_parkrun_times = transform_raw_to_int(raw_parkrun_times, times_heading)
-    print('\nDEBUG: seconds_parkrun_times'); pprint(seconds_parkrun_times)
+    print('\nDEBUG: seconds_parkrun_times')
+    pprint(seconds_parkrun_times)
 
     # 2: PROCESS CSV DATA: USING PANDAS, ITERATORS, MATPLOTLIB
     hm_runfile = "./test_data/half_marathon_bishanga_edmund.csv"
