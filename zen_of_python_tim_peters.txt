@@ -1,4 +1,4 @@
-THE ZEN OF PYTHON: TIM PETERS
+THE ZEN|Values OF SOFTWARE DEVELOPMENT: Python: TIM PETERS
 
 Beautiful is better than ugly.
 Explicit is better than implicit.
