@@ -18,7 +18,7 @@ DATA_DIR = './test_data'
 valid_paths = [
     ('half_marathon_bishanga_edmund.csv', 'Half Marathon'),
     ('input_data_test_todays_park_run.json', 'PocketPark'),
-    ('parkrunner_details_A1618583.json', 'surName')
+    ('parkrunner_db_details_A1618583.json', 'surName')
 ]
 @pytest.mark.parametrize('valid_file_tuple', valid_paths)
 def test_get_file_contents_valid_path(valid_file_tuple):

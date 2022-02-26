@@ -115,7 +115,7 @@ def parse_pr_name(inputs_name):
     middleName = pr_names[-2] if len(pr_names) > 2 else ''
     return (firstName, middleName, surName)
 
-def augment_parkrunner_details(pr_details, inputs, using_csv):
+def augment_parkrunner_db_details(pr_details, inputs, using_csv):
     if inputs.space:
         pr_details['todaysParkRun'] = inputs.space
     if not pr_details.get('todaysParkRun'):
@@ -142,10 +142,10 @@ def augment_parkrunner_details(pr_details, inputs, using_csv):
             "max_hr_bpm" : int(pr_details.get('max_hr_bpm')),
             "age" : int(pr_details.get('age'))
         }
-    print(f'\nDEBUG: fn::augment_parkrunner_details: pr_details after: \n{pr_details}')
+    print(f'\nDEBUG: fn::augment_parkrunner_db_details: pr_details after: \n{pr_details}')
     return pr_details
 
-def get_parkrunner_details(inputs):
+def get_parkrunner_db_details(inputs):
     pr_details = dict()
 
     using_csv = bool(CSV_DATASTORE and inputs.parkrunner_id)
@@ -162,13 +162,13 @@ def get_parkrunner_details(inputs):
                     pr_details = row
     else:
         # or read from individual parkrunner JSON file
-        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_details_{inputs.parkrunner_id}.json'
+        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_db_details_{inputs.parkrunner_id}.json'
         with open(pr_json_file, 'r', encoding=DEFAULT_ENCODING) as fileObj:
             pr_details = json.load(fileObj)
-    print(f'\nDEBUG: fn::get_parkrunner_details: pr_details before: \n{pr_details}')
+    print(f'\nDEBUG: fn::get_parkrunner_db_details: pr_details before: \n{pr_details}')
 
     # Augment parkRunner Data/Info
-    pr_details = augment_parkrunner_details(pr_details, inputs, using_csv)
+    pr_details = augment_parkrunner_db_details(pr_details, inputs, using_csv)
     return pr_details
 
 def update_runner_details(inputs, pr_details):
@@ -187,7 +187,7 @@ def update_runner_details(inputs, pr_details):
                 )    # pylint: disable=no-value-for-parameter
     else:
         # get parkrunner details as dictionary, from appropriate JSON dataStore
-        Runner = ParkRunner(parkrunner_name, parkrunner_details=pr_details)
+        Runner = ParkRunner(parkrunner_name, parkrunner_db_details=pr_details)
     return Runner
 
 def output_park_summary(Space):
@@ -255,7 +255,7 @@ def main():
     validate_inputs(inputs)
 
     # Prioritize ParkRunner JSON/Dictionary whenever available
-    pr_details = get_parkrunner_details(inputs)
+    pr_details = get_parkrunner_db_details(inputs)
     assert pr_details, 'pr_details: Missing parkRunner Details: see --help/-h'
 
     # process ParkRun details
