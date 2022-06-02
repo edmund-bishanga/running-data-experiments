@@ -26,7 +26,7 @@ from test_classes.park_runner import ParkRunner
 
 DEFAULT_DATA_DIR = './test_data'
 CSV_DATASTORE = f'{DEFAULT_DATA_DIR}/parkrunners_db.csv'
-DEFAULT_ENCODING = 'utf-8'
+DEF_ENCODING = 'utf-8'
 DEFUALT_PARK_TEMP = 10
 DEFAULT_PARK_RUNNER = {
     "surName": "BISHANGA",
@@ -90,7 +90,7 @@ def parse_inputs():
         '-M', "--max-hr", help='int: Max HeartRate of Athlete, bpm'
     )
     args.add_argument(
-        '-C', "--covid-feedback", default=False,
+        '-C', "--covid-feedback", action='store_true',
         help='flag: Provide COVID Recovery Feedback'
     )
     inputs = args.parse_args()
@@ -155,7 +155,7 @@ def get_parkrunner_db_details(inputs):
         pr_details = DEFAULT_PARK_RUNNER
     elif using_csv:
         # read an appropriate row/JSON from the parkrunners_db/CSV datastore
-        with open(CSV_DATASTORE, newline='', encoding=DEFAULT_ENCODING) as csvfile:
+        with open(CSV_DATASTORE, newline='', encoding=DEF_ENCODING) as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 if row.get('parkrunner_id') == inputs.parkrunner_id:
@@ -163,7 +163,7 @@ def get_parkrunner_db_details(inputs):
     else:
         # or read from individual parkrunner JSON file
         pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_db_details_{inputs.parkrunner_id}.json'
-        with open(pr_json_file, 'r', encoding=DEFAULT_ENCODING) as fileObj:
+        with open(pr_json_file, 'r', encoding=DEF_ENCODING) as fileObj:
             pr_details = json.load(fileObj)
     print(f'\nDEBUG: fn::get_parkrunner_db_details: pr_details before: \n{pr_details}')
 
@@ -220,6 +220,10 @@ def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
 
     print(f"\n{Runner.name}: {ref_str}: VO2max_potential: {Runner.get_vo2max_potential()}")
     print(f"{Runner.name}: Estimated V02max_current: This Week: {Race.get_vo2max_current()}")
+
+    percent_vo2max = round(100 * (Race.get_vo2max_current() / Runner.get_vo2max_potential()), 1)
+
+    print(f"{Runner.name}: This Week's VO2max vs Potential VO2max: {percent_vo2max}%")
     normalised_v02_pdiff = round(100 * (Race.get_vo2max_current() / Runner.get_vo2max_potential()) - 100, 1)
     if inputs.covid_feedback:
         print(f"{Runner.name}: This Week's Effort: vs PreCOVID V02_max_potential: {normalised_v02_pdiff}%")
