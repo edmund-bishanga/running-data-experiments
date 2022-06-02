@@ -1,6 +1,6 @@
 #!usr/bin/python
 """
-Half Marathon Post-Run Data Analysis:
+ParkRun Post-Run Data Analysis:
 Exploring various statistical information keys from my running data
 + average pace
 + total mileage
@@ -104,16 +104,17 @@ def main():
     pprint(seconds_parkrun_times)
 
     # 2: PROCESS CSV DATA: USING PANDAS, ITERATORS, MATPLOTLIB
-    hm_runfile = "./test_data/half_marathon_bishanga_edmund.csv"
-    rundata = get_file_contents(hm_runfile)
+    # parkrun_csv_file = "./test_data/half_marathon_bishanga_edmund.csv"
+    rundata = get_file_contents(parkrun_csv_file)
     # use pandas to get rundata_frame
-    run_dframe = pd.read_csv(hm_runfile)
+    run_dframe = pd.read_csv(parkrun_csv_file)
     print('DEBUG: run_dframe:')
     pprint(run_dframe)
     # sys.exit(0)
-    # parse data -> appropriate data structure
+
+    # 2: A: parse data -> appropriate data structure
     if not rundata:
-        print("{} seems empty or it's data inaccessible".format(hm_runfile))
+        print("{} seems empty or it's data inaccessible".format(parkrun_csv_file))
         sys.exit(1)
     units = dict()
     labels = list()
@@ -136,10 +137,11 @@ def main():
                 vals = row.strip('\n').split(',')
                 lrow = dict(zip(labels, vals))
                 rows.append(lrow)
-    # 2. Calculate basic running Stats
+
+    # 2: B: Calculate basic running Stats
     y_values = list()
     x_values = list()
-    event_name = 'Cambridge Half Marathon'
+    event_name = 'ParkRun'
     event_x_axis = 'date'
     event_y_axis = 'time'
     iter_rows = iter(rows)
@@ -162,15 +164,15 @@ def main():
     print('y_axis: {}'.format(event_y_axis))
     print('Coordinates: ')
     pprint(coordinates, width=1600)
-    # 2a: output basic stats summary
+    # 2: B: i: output basic stats summary
     pprint(stats.describe(y_values))
-    # 2b. Plot line graph
+    # 2: B: ii: Plot line graph
     pyplot.plot(x_values, y_values, 'o--r')
     pyplot.xlabel(event_x_axis)
     pyplot.ylabel(event_y_axis)
     pyplot.title(event_name)
     pyplot.show()
-    # 2c. Plot normal distribution
+    # 2: B: iii: Plot normal distribution
     mean = round(numpy.mean(y_values), 2)
     print('mean: {}'.format(mean))
 
@@ -189,12 +191,13 @@ def main():
     )
     pyplot.xlabel('run times')
     pyplot.ylabel('likelihood')
-    pyplot.title('{event}: estimated normal distribution'.format(event=event_name))
+    pyplot.title('{event}: estimated Normal|Gaussian distribution'.format(event=event_name))
     pyplot.show()
 
     # 3. Do Running Economy Analysis
 
     # 4. Provide Recommendations
+
 
 if __name__ == '__main__':
     main()
