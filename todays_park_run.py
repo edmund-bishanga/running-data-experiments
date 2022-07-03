@@ -128,7 +128,8 @@ def augment_parkrunner_db_details(pr_details, inputs, using_csv):
         pr_details['surName'] = surName
 
     if pr_details.get('dateOfBirth_yyyy-mm-dd'):
-        birthDate = datetime.strptime(pr_details.get('dateOfBirth_yyyy-mm-dd'), "%Y-%m-%d")
+        pr_details_dob = pr_details.get('dateOfBirth_yyyy-mm-dd')
+        birthDate = datetime.strptime(pr_details_dob, "%Y-%m-%d")
         age = relativedelta(datetime.today(), birthDate).years
         pr_details['age'] = age
 
@@ -142,7 +143,8 @@ def augment_parkrunner_db_details(pr_details, inputs, using_csv):
             "max_hr_bpm" : int(pr_details.get('max_hr_bpm')),
             "age" : int(pr_details.get('age'))
         }
-    print(f'\nDEBUG: fn::augment_parkrunner_db_details: pr_details after: \n{pr_details}')
+    this_method = 'fn::augment_parkrunner_db_details'
+    print(f'\nDEBUG: {this_method}: pr_details after: \n{pr_details}')
     return pr_details
 
 def get_parkrunner_db_details(inputs):
@@ -162,10 +164,12 @@ def get_parkrunner_db_details(inputs):
                     pr_details = row
     else:
         # or read from individual parkrunner JSON file
-        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_db_details_{inputs.parkrunner_id}.json'
+        pr_id = inputs.parkrunner_id
+        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_db_details_{pr_id}.json'
         with open(pr_json_file, 'r', encoding=DEF_ENCODING) as fileObj:
             pr_details = json.load(fileObj)
-    print(f'\nDEBUG: fn::get_parkrunner_db_details: pr_details before: \n{pr_details}')
+    this_method = 'fn::get_parkrunner_db_details'
+    print(f'\nDEBUG: {this_method}: pr_details before: \n{pr_details}')
 
     # Augment parkRunner Data/Info
     pr_details = augment_parkrunner_db_details(pr_details, inputs, using_csv)
@@ -179,10 +183,14 @@ def update_runner_details(inputs, pr_details):
             height, weight, resting_hr, max_hr
             Details, add ' --help'
         """
-        assert inputs.height and inputs.weight and inputs.resting_hr and inputs.max_hr, err_msg
+        rest_hr = inputs.resting_hr
+        max_hr = inputs.max_hr
+        assert inputs.height and inputs.weight and rest_hr and max_hr, err_msg
         Runner = ParkRunner(
-                    parkrunner_name, age=int(inputs.age), height=float(inputs.height),
-                    weight=float(inputs.weight), resting_hr=int(inputs.resting_hr),
+                    parkrunner_name, age=int(inputs.age),
+                    height=float(inputs.height),
+                    weight=float(inputs.weight),
+                    resting_hr=int(inputs.resting_hr),
                     max_hr=int(inputs.max_hr)
                 )    # pylint: disable=no-value-for-parameter
     else:
@@ -194,7 +202,8 @@ def output_park_summary(Space):
     # logging experiment
     # message tags: info, warning, debug, error
     import logging  # pylint: disable=import-outside-toplevel
-    logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%a/%d.%b.%Y %H:%M:%S')
+    meb_df = '%a/%d.%b.%Y %H:%M:%S'
+    logging.basicConfig(format='%(asctime)s: %(message)s', datefmt=meb_df)
     logging.info('event ABC: var_name: %s was logged.', Space.venue)
     logging.warning('Park: Venue: %s', Space.venue)
     logging.debug('Park: Venue: %s', Space.venue)
@@ -204,57 +213,82 @@ def output_park_summary(Space):
     print(f'Park: Temp: {Space.get_temperature()} degCelcius')
 
 def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
-    # print("\n{}: Ref: VO2max_potential: {}".format(Runner.name, Runner.get_vo2max_potential()))
-    # print("{}: Ref: Season's Best ParkRunTime: in hh:mm:ss {}".format(Runner.name, pr_details.get('parkrun_sb')))
-    # print("\n{}: Ref: pBMI: {}".format(Runner.name, Runner.get_bmi()))
+    pr_name = Runner.name
+    vo2max_potential = Runner.get_vo2max_potential()
+    print(f"\n{pr_name}: Ref: VO2max_potential: {vo2max_potential}")
+    pr_sb = pr_details.get('parkrun_sb')
+    print(f"{pr_name}: Ref: Season's Best ParkRunTime: in hh:mm:ss {pr_sb}")
+    print(f"\n{pr_name}: Ref: pBMI: {Runner.get_bmi()}")
     ref_str = 'PreCOVID' if inputs.covid_feedback else 'Ref'
-    print(f"\n{Runner.name}: {ref_str}: BMI: {Runner.get_trefethen_bmi()}")
+    print(f"\n{pr_name}: {ref_str}: BMI: {Runner.get_trefethen_bmi()}")
 
-    dist_run_today = inputs.distance if inputs.distance else Race.get_dist_miles()
-    print(f"\n{Runner.name}: Dist_run_today: in miles {dist_run_today}")
-    strtime_run_today = inputs.time if inputs.time else Race.convert_seconds_to_timestr_hh_mm_ss(Race.get_time_sec())
-    print(f"{Runner.name}: This Week's Effort: RunTime: in hh:mm:ss {strtime_run_today}")
-    print(f"{Runner.name}: This Week's Estimated Pace: {Race.get_race_pace_str()} min/mile")
-    print(f"{Runner.name}: This Week's Equivalent ParkRun5kTime: in hh:mm:ss {Race.get_t_parkrun_timestr()}")
+    dist_run_today = Race.get_dist_miles()
+    if inputs.distance:
+        dist_run_today = inputs.distance
+    print(f"\n{pr_name}: Dist_run_today: in miles {dist_run_today}")
+    r_time = Race.get_time_sec()
+    run_time_tday = Race.convert_seconds_to_timestr_hh_mm_ss(r_time)
+    if inputs.time:
+        run_time_tday = inputs.time
+    era = "This Week's"
+    print(f"{pr_name}: {era} Effort: RunTime: (hh:mm:ss) {run_time_tday}")
+    race_pace_tday = Race.get_race_pace_str()
+    print(f"{pr_name}: {era} Estimated Pace: {race_pace_tday} min/mile")
+    eq_5k_time = Race.get_t_parkrun_timestr()
+    print(f"{pr_name}: {era} Equivalent ParkRun5kTime: (hh:mm:ss) {eq_5k_time}")
 
+    print(f"\n{pr_name}: {ref_str}: VO2max_potential: {vo2max_potential}")
+    current_vo2max = Race.get_vo2max_current()
+    print(f"{pr_name}: Estimated V02max_current: This Week: {current_vo2max}")
 
-    print(f"\n{Runner.name}: {ref_str}: VO2max_potential: {Runner.get_vo2max_potential()}")
-    print(f"{Runner.name}: Estimated V02max_current: This Week: {Race.get_vo2max_current()}")
-
-    percent_vo2max = round(100 * (Race.get_vo2max_current() / Runner.get_vo2max_potential()), 1)
-
-    print(f"{Runner.name}: This Week's VO2max vs Potential VO2max: {percent_vo2max}%")
-    normalised_v02_pdiff = round(100 * (Race.get_vo2max_current() / Runner.get_vo2max_potential()) - 100, 1)
+    pcent_vo2max = round(100 * (current_vo2max / vo2max_potential), 1)
+    print(f"{pr_name}: This Week's VO2max vs Potential VO2max: {pcent_vo2max}%")
+    normalised_v02_pdiff = round(100 * (current_vo2max / vo2max_potential) - 100, 1)
     if inputs.covid_feedback:
-        print(f"{Runner.name}: This Week's Effort: vs PreCOVID V02_max_potential: {normalised_v02_pdiff}%")
+        weekly_diff_str = "This Week's Effort: vs PreCOVID V02_max_potential"
+        print(f"{pr_name}: {weekly_diff_str}: {normalised_v02_pdiff}%")
         orange_v02_str = "V02max Recovery: ORANGE: still Concerning..."
         green_v02_str = "V02max Recovery: GREEN: OK, getting There..."
         v02_pThreshold = -12
-        v02max_progress = orange_v02_str if normalised_v02_pdiff < v02_pThreshold else green_v02_str
-        print(f"{Runner.name}: This Week's Effort: vs preCOVID V02_max_potential: {v02max_progress}")
+        v02max_progress = green_v02_str
+        if normalised_v02_pdiff < v02_pThreshold:
+            v02max_progress = orange_v02_str
+        print(f"{pr_name}: {weekly_diff_str}: {v02max_progress}")
 
     normalised_5k_effort = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_sb_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
-    normalised_5k_effort = '+' + str(normalised_5k_effort) if normalised_5k_effort > 0 else str(normalised_5k_effort)
-    print(f"{Runner.name}: This Week's Effort: vs Season's Best: {normalised_5k_effort}%\n")
+    normalised_5k_effort = str(normalised_5k_effort)
+    if float(normalised_5k_effort) > 0:
+        normalised_5k_effort = '+' + str(normalised_5k_effort)
+    season_diff_str = "This Week's Effort: vs Season's Best"
+    print(f"{pr_name}: {season_diff_str}: {normalised_5k_effort}%\n")
 
     if inputs.covid_feedback:
-        print(f"{Runner.name}: Last 4 Weeks' Average ParkRun5kTime: in hh:mm:ss {pr_details.get('parkrun_last4wks')}")
+        four_wk_str = "Last 4 Weeks' Average ParkRun5kTime: in hh:mm:ss"
+        print(f"{pr_name}: {four_wk_str}: {pr_details.get('parkrun_last4wks')}")
         progressed_5k_pdiff = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_4wks_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
-        s_progressed_5k_pdiff = '+' + str(progressed_5k_pdiff) if progressed_5k_pdiff > 0 else str(progressed_5k_pdiff)
-        print(f"{Runner.name}: This Week's Effort: vs Last 4 Weeks' Average: percentageDiff: {s_progressed_5k_pdiff}%")
+        s_progressed_5k_pdiff = str(progressed_5k_pdiff)
+        if int(progressed_5k_pdiff) > 0:
+            s_progressed_5k_pdiff = '+' + str(progressed_5k_pdiff)
+        four_wk_diff_str = "This Week's Effort: vs Last 4 Weeks' Average: "
+        print(f"{pr_name}: {four_wk_diff_str}: pcentDiff: {s_progressed_5k_pdiff}%")
 
         red_warning_str = "RED: REGRESSED: Please Consult GP Again..."
         green_ok_str = "GREEN: OK: Making Progress... Keep it Up..."
         parkrun5k_pThreshold = -10
-        progress = red_warning_str if progressed_5k_pdiff < parkrun5k_pThreshold else green_ok_str
-        print(f"{Runner.name}: This Week's Effort: vs Last 4 Weeks: Verdict: {progress}\n")
+        progress = green_ok_str
+        if progressed_5k_pdiff < parkrun5k_pThreshold:
+            progress = red_warning_str
+        print(f"{pr_name}: {four_wk_diff_str}: Verdict: {progress}\n")
 
 
 def main():
-    """ Interactive function: Inputs event details, provides normalised insights. """
+    """ Interactive: takes event details, gives normalised insights. """
     # Example input format
-    # python3 ./TodaysParkRun.py -n "Bishanga, EM" -t 00:18:18 -d 3.1 -s "PocketPark"
-    # python3 ./TodaysParkRun.py --name "Bishanga, EM" --time 00:18:18 --distance 3.1 --space "PocketPark"
+    # python3 ./TodaysParkRun.py -n "Bishanga, EM"
+    #                            -t 00:18:18 -d 3.1 -s "PocketPark"
+    # python3 ./TodaysParkRun.py --name "Bishanga, EM"
+    #                            --time 00:18:18 --distance 3.1
+    #                            --space "PocketPark"
     inputs = parse_inputs()
     validate_inputs(inputs)
 
@@ -264,11 +298,17 @@ def main():
 
     # process ParkRun details
     park_name = pr_details.get('todaysParkRun')
-    Space = Park(park_name, temperature=inputs.temperature, precipitation=2, surface="mixed", inclination=2)
+    Space = Park(
+        park_name, temperature=inputs.temperature,
+        precipitation=2, surface="mixed", inclination=2
+    )
     output_park_summary(Space)
 
     Runner = update_runner_details(inputs, pr_details)
-    Race = ParkRun(park=Space, runner=Runner, dist_miles=inputs.distance, run_timestr=inputs.time, pace=inputs.pace)
+    Race = ParkRun(
+        park=Space, runner=Runner, dist_miles=inputs.distance,
+        run_timestr=inputs.time, pace=inputs.pace
+    )
     output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race)
 
 
