@@ -196,10 +196,9 @@ def main():
     print(f'variance: {variance}')
 
     x_data = sorted(y_values)
-    # pylint: disable=line-too-long
     pyplot.plot(
         x_data,
-        1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (x_data - mean)**2 / (2 * std_dev**2) ),
+        1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (x_data - mean)**2 / (2 * std_dev**2) ),  # pylint: disable=line-too-long
         'o-', linewidth=3, color='r'
     )
     pyplot.xlabel('run times')
