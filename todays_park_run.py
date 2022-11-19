@@ -93,6 +93,10 @@ def parse_inputs():
         '-C', "--covid-feedback", action='store_true',
         help='flag: Provide COVID Recovery Feedback'
     )
+    args.add_argument(
+        '-m', "--minimal-pdata", action='store_true',
+        help='flag: Provide minimal personal data'
+    )
     inputs = args.parse_args()
     return inputs
 
@@ -218,34 +222,35 @@ def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
     print(f"\n{pr_name}: Ref: VO2max_potential: {vo2max_potential}")
     pr_sb = pr_details.get('parkrun_sb')
     print(f"{pr_name}: Ref: Season's Best ParkRunTime: in hh:mm:ss {pr_sb}")
-    print(f"\n{pr_name}: Ref: pBMI: {Runner.get_bmi()}")
+    if not inputs.minimal_pdata:
+        print(f"{pr_name}: Ref: pBMI: {Runner.get_bmi()}")
     ref_str = 'PreCOVID' if inputs.covid_feedback else 'Ref'
-    print(f"\n{pr_name}: {ref_str}: BMI: {Runner.get_trefethen_bmi()}")
+    if not inputs.minimal_pdata:
+        print(f"{pr_name}: {ref_str}: BMI: {Runner.get_trefethen_bmi()}")
 
     dist_run_today = Race.get_dist_miles()
     if inputs.distance:
         dist_run_today = inputs.distance
-    print(f"\n{pr_name}: Dist_run_today: in miles {dist_run_today}")
+    print(f"\n{pr_name}: Distance Run Today: in miles {dist_run_today}")
     r_time = Race.get_time_sec()
     run_time_tday = Race.convert_seconds_to_timestr_hh_mm_ss(r_time)
     if inputs.time:
         run_time_tday = inputs.time
-    era = "This Week's"
+    era = "Today's"
     print(f"{pr_name}: {era} Effort: RunTime: (hh:mm:ss) {run_time_tday}")
     race_pace_tday = Race.get_race_pace_str()
     print(f"{pr_name}: {era} Estimated Pace: {race_pace_tday} min/mile")
     eq_5k_time = Race.get_t_parkrun_timestr()
     print(f"{pr_name}: {era} Equivalent ParkRun5kTime: (hh:mm:ss) {eq_5k_time}")
 
-    print(f"\n{pr_name}: {ref_str}: VO2max_potential: {vo2max_potential}")
     current_vo2max = Race.get_vo2max_current()
-    print(f"{pr_name}: Estimated V02max_current: This Week: {current_vo2max}")
+    print(f"\n{pr_name}: Estimated V02max_current: {era}: {current_vo2max}")
 
     pcent_vo2max = round(100 * (current_vo2max / vo2max_potential), 1)
-    print(f"{pr_name}: This Week's VO2max vs Potential VO2max: {pcent_vo2max}%")
+    print(f"{pr_name}: {era} VO2max vs Potential VO2max: {pcent_vo2max}%")
     normalised_v02_pdiff = round(100 * (current_vo2max / vo2max_potential) - 100, 1)
     if inputs.covid_feedback:
-        weekly_diff_str = "This Week's Effort: vs PreCOVID V02_max_potential"
+        weekly_diff_str = f"{era} Effort: vs PreCOVID V02_max_potential"
         print(f"{pr_name}: {weekly_diff_str}: {normalised_v02_pdiff}%")
         orange_v02_str = "V02max Recovery: ORANGE: still Concerning..."
         green_v02_str = "V02max Recovery: GREEN: OK, getting There..."
@@ -259,7 +264,7 @@ def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
     normalised_5k_effort = str(normalised_5k_effort)
     if float(normalised_5k_effort) > 0:
         normalised_5k_effort = '+' + str(normalised_5k_effort)
-    season_diff_str = "This Week's Effort: vs Season's Best"
+    season_diff_str = f"{era} Effort: vs Season's Best"
     print(f"{pr_name}: {season_diff_str}: {normalised_5k_effort}%\n")
 
     if inputs.covid_feedback:
@@ -269,7 +274,7 @@ def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
         s_progressed_5k_pdiff = str(progressed_5k_pdiff)
         if int(progressed_5k_pdiff) > 0:
             s_progressed_5k_pdiff = '+' + str(progressed_5k_pdiff)
-        four_wk_diff_str = "This Week's Effort: vs Last 4 Weeks' Average: "
+        four_wk_diff_str = f"{era} Effort: vs Last 4 Weeks' Average: "
         print(f"{pr_name}: {four_wk_diff_str}: pcentDiff: {s_progressed_5k_pdiff}%")
 
         red_warning_str = "RED: REGRESSED: Please Consult GP Again..."
