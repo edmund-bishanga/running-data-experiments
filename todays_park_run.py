@@ -8,13 +8,11 @@ Interactive Script:
 
 # pylint: disable=line-too-long
 # pylint: disable=invalid-name
-# pylint: disable=unused-import
 # pylint: disable=missing-function-docstring
 
 import argparse
 import csv
 import json
-import sys
 from datetime import datetime
 from pprint import pprint
 
@@ -216,6 +214,35 @@ def output_park_summary(Space):
     print(f'Park: Surface: {Space.surface}')
     print(f'Park: Temp: {Space.get_temperature()} degCelcius')
 
+def output_covid_vo2max_progress(pr_name, era, normalised_v02_pdiff):
+    weekly_diff_str = f"{era} Effort: vs PreCOVID V02_max_potential"
+    print(f"{pr_name}: {weekly_diff_str}: {normalised_v02_pdiff}%")
+    orange_v02_str = "V02max Recovery: ORANGE: still Concerning..."
+    green_v02_str = "V02max Recovery: GREEN: OK, getting There..."
+    v02_pThreshold = -12
+    v02max_progress = green_v02_str
+    if normalised_v02_pdiff < v02_pThreshold:
+        v02max_progress = orange_v02_str
+    print(f"{pr_name}: {weekly_diff_str}: {v02max_progress}")
+
+def output_runners_covid_feedback(pr_details, Runner, Race, pr_name, era):
+    four_wk_str = "Last 4 Weeks' Average ParkRun5kTime: in hh:mm:ss"
+    print(f"{pr_name}: {four_wk_str}: {pr_details.get('parkrun_last4wks')}")
+    progressed_5k_pdiff = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_4wks_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
+    s_progressed_5k_pdiff = str(progressed_5k_pdiff)
+    if int(progressed_5k_pdiff) > 0:
+        s_progressed_5k_pdiff = '+' + str(progressed_5k_pdiff)
+    four_wk_diff_str = f"{era} Effort: vs Last 4 Weeks' Average: "
+    print(f"{pr_name}: {four_wk_diff_str}: pcentDiff: {s_progressed_5k_pdiff}%")
+
+    red_warning_str = "RED: REGRESSED: Please Consult GP Again..."
+    green_ok_str = "GREEN: OK: Making Progress... Keep it Up..."
+    parkrun5k_pThreshold = -10
+    progress = green_ok_str
+    if progressed_5k_pdiff < parkrun5k_pThreshold:
+        progress = red_warning_str
+    print(f"{pr_name}: {four_wk_diff_str}: Verdict: {progress}\n")
+
 def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
     pr_name = Runner.name
     vo2max_potential = Runner.get_vo2max_potential()
@@ -250,15 +277,7 @@ def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
     print(f"{pr_name}: {era} VO2max vs Potential VO2max: {pcent_vo2max}%")
     normalised_v02_pdiff = round(100 * (current_vo2max / vo2max_potential) - 100, 1)
     if inputs.covid_feedback:
-        weekly_diff_str = f"{era} Effort: vs PreCOVID V02_max_potential"
-        print(f"{pr_name}: {weekly_diff_str}: {normalised_v02_pdiff}%")
-        orange_v02_str = "V02max Recovery: ORANGE: still Concerning..."
-        green_v02_str = "V02max Recovery: GREEN: OK, getting There..."
-        v02_pThreshold = -12
-        v02max_progress = green_v02_str
-        if normalised_v02_pdiff < v02_pThreshold:
-            v02max_progress = orange_v02_str
-        print(f"{pr_name}: {weekly_diff_str}: {v02max_progress}")
+        output_covid_vo2max_progress(pr_name, era, normalised_v02_pdiff)
 
     normalised_5k_effort = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_sb_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
     normalised_5k_effort = str(normalised_5k_effort)
@@ -268,22 +287,8 @@ def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
     print(f"{pr_name}: {season_diff_str}: {normalised_5k_effort}%\n")
 
     if inputs.covid_feedback:
-        four_wk_str = "Last 4 Weeks' Average ParkRun5kTime: in hh:mm:ss"
-        print(f"{pr_name}: {four_wk_str}: {pr_details.get('parkrun_last4wks')}")
-        progressed_5k_pdiff = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_4wks_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
-        s_progressed_5k_pdiff = str(progressed_5k_pdiff)
-        if int(progressed_5k_pdiff) > 0:
-            s_progressed_5k_pdiff = '+' + str(progressed_5k_pdiff)
-        four_wk_diff_str = f"{era} Effort: vs Last 4 Weeks' Average: "
-        print(f"{pr_name}: {four_wk_diff_str}: pcentDiff: {s_progressed_5k_pdiff}%")
+        output_runners_covid_feedback(pr_details, Runner, Race, pr_name, era)
 
-        red_warning_str = "RED: REGRESSED: Please Consult GP Again..."
-        green_ok_str = "GREEN: OK: Making Progress... Keep it Up..."
-        parkrun5k_pThreshold = -10
-        progress = green_ok_str
-        if progressed_5k_pdiff < parkrun5k_pThreshold:
-            progress = red_warning_str
-        print(f"{pr_name}: {four_wk_diff_str}: Verdict: {progress}\n")
 
 
 def main():
