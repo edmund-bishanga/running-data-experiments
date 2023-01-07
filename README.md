@@ -23,7 +23,7 @@ Current Running PBs: 2020
     http://www.eng.cam.ac.uk/
   * Pembroke College, Cambridge, UK, 2003-7<br/>
     https://www.pem.cam.ac.uk/
-* Over 10 years experience in System Test/Verification, CI & Automation.
+* About 15 years experience in System Test/Verification, CI & Automation|Development.
 * With Preference for Python/Git, Linux/Bash Shell.
 * And Experience of Agile/SCRUM, JIRA, Jenkins: CI/CD
 * Further Details: https://www.linkedin.com/in/edmund-muzoora-bishanga-ma-meng-cantab-miet-a0748272/
@@ -31,4 +31,4 @@ Current Running PBs: 2020
 Thank you.
 
 Edmund Muzoora BISHANGA<br/>
-June 2021
+January 2023
