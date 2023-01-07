@@ -9,6 +9,7 @@ Exploring various statistical information keys from my running data
 + running economy analysis
 """
 
+# pylint: disable=line-too-long
 # pylint: disable=invalid-name
 # pylint: disable=unused-import
 # pylint: disable=missing-function-docstring
@@ -20,9 +21,8 @@ from pprint import pprint
 
 import numpy
 import pandas as pd
-import pylab
-import matplotlib.pyplot as pyplot
-import scipy.stats as stats
+from matplotlib import pyplot
+from scipy import stats
 
 from test_classes.park_runner import ParkRunner
 
@@ -56,7 +56,7 @@ class HalfMarathonExpts():
     # generator experiment: big data .csv processing
     @staticmethod
     def collect_buffered_raw_data(unltd_raw_data_gen, max_length):
-        ltd_raw_data = list()
+        ltd_raw_data = []
         try:
             # get next raw data val, until buffer limit
             while len(ltd_raw_data) < max_length:
@@ -98,8 +98,8 @@ class HalfMarathonExpts():
 
     @staticmethod
     def get_data_rows(rundata):
-        units = dict()
-        labels = list()
+        units = {}
+        labels = []
         for header in rundata.pop(0).strip('\n').split(','):
             if header:
                 label = header.split(' ')[0]
@@ -108,7 +108,7 @@ class HalfMarathonExpts():
                     unit = header.split(' ')[1].strip('(').strip(')')
                 units.update({label:unit})
                 labels.append(label)
-        rows = list()
+        rows = []
         iter_rundata = iter(rundata)
         done = False
         while not done:
@@ -125,8 +125,8 @@ class HalfMarathonExpts():
 
     @staticmethod
     def calculate_plotable_coordinates(rows, event_x_axis, event_y_axis, event_name):
-        x_values = list()
-        y_values = list()
+        x_values = []
+        y_values = []
         iter_rows = iter(rows)
         done = False
         while not done:
@@ -138,7 +138,7 @@ class HalfMarathonExpts():
                 if event_name in row.get('venue'):
                     str_time = row.get(event_y_axis)
                     hr, mm, ss = tuple(str_time.split(':'))
-                    duration = round(float((int(hr) * 3600 + int(mm) * 60 + int(ss)) / 60), 1)  # pylint: disable=line-too-long
+                    duration = round(float((int(hr) * 3600 + int(mm) * 60 + int(ss)) / 60), 1)  # Maths: readable equation: long line: OK
                     y_values.append(duration)
                     x_values.append(row.get(event_x_axis))
         return (x_values, y_values)
@@ -163,7 +163,7 @@ class HalfMarathonExpts():
         x_data = sorted(data)
         pyplot.plot(
             x_data,
-            1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (x_data - mean)**2 / (2 * std_dev**2) ),  # pylint: disable=line-too-long
+            1/(std_dev * numpy.sqrt(2 * numpy.pi)) * numpy.exp( - (x_data - mean)**2 / (2 * std_dev**2) ),  # Maths: readable equation: long line: OK
             'o-', linewidth=3, color='r'
         )
         pyplot.xlabel('Run Times')
