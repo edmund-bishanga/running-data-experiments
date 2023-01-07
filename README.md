@@ -5,8 +5,8 @@
 
 ## ATHLETIC: AMATEUR ENDURANCE RUNNER
 Am an Endurance Runner with my local amateur Running Club, in the UK
-* Riverside Runners, St Neots, Cambridgeshire
-  https://riverside-runners.com/
+* Swinton Running Club, Manchester
+  http://www.swintonrunningclub.org.uk/
 
 Current Running PBs: 2020
 * The Mile/1.61km:             5min
