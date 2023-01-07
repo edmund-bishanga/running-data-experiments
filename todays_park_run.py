@@ -22,9 +22,9 @@ from test_classes.park import Park
 from test_classes.park_run import ParkRun
 from test_classes.park_runner import ParkRunner
 
-DEFAULT_DATA_DIR = './test_data'
-CSV_DATASTORE = f'{DEFAULT_DATA_DIR}/parkrunners_db.csv'
-DEF_ENCODING = 'utf-8'
+DEFAULT_DATA_DIR = "./test_data"
+CSV_DATASTORE = f"{DEFAULT_DATA_DIR}/parkrunners_db.csv"
+DEF_ENCODING = "utf-8"
 DEFUALT_PARK_TEMP = 10
 DEFAULT_PARK_RUNNER = {
     "surName": "BISHANGA",
@@ -37,148 +37,133 @@ DEFAULT_PARK_RUNNER = {
     "parkrun_last4wks": "00:32:23",
     "parkrun_sb": "00:18:30",
     "parkrun_pb": "00:17:30",
-    "prBMIDetails": {
-        "height_m": 1.75,
-        "weight_kg": 67.5
-    },
-    "prVO2MaxDetails": {
-        "resting_hr_bpm": 45,
-        "max_hr_bpm": 200,
-        "age": 32
-    }
+    "prBMIDetails": {"height_m": 1.75, "weight_kg": 67.5},
+    "prVO2MaxDetails": {"resting_hr_bpm": 45, "max_hr_bpm": 200, "age": 32},
 }
+
 
 def parse_inputs():
     args = argparse.ArgumentParser()
+    args.add_argument("-p", "--parkrunner-id", help="str: ParkRun Number|ID")
+    args.add_argument("-n", "--name", help="str: Name of Athlete")
+    args.add_argument("-d", "--distance", help="float: Distance, miles")
+    args.add_argument("-t", "--time", help="strtime: RunTime, hh:mm:ss")
+    args.add_argument("-s", "--space", help="str: Park")
     args.add_argument(
-        '-p', "--parkrunner-id", help='str: ParkRun Number|ID'
+        "-T",
+        "--temperature",
+        default=DEFUALT_PARK_TEMP,
+        help="int: Temperature on the day",
+    )
+    args.add_argument("-A", "--age", help="int: Age of Athlete, years")
+    args.add_argument("-P", "--pace", help='str: Pace of athlete, "mm:ss" min/mile')
+    args.add_argument("-H", "--height", help="float: Height of Athlete, metres")
+    args.add_argument("-W", "--weight", help="float: Weight of Athlete, kg")
+    args.add_argument(
+        "-L", "--resting-hr", help="int: Resting HeartRate of Athlete, bpm"
+    )
+    args.add_argument("-M", "--max-hr", help="int: Max HeartRate of Athlete, bpm")
+    args.add_argument(
+        "-C",
+        "--covid-feedback",
+        action="store_true",
+        help="flag: Provide COVID Recovery Feedback",
     )
     args.add_argument(
-        '-n', "--name", help='str: Name of Athlete'
-    )
-    args.add_argument(
-        '-d', "--distance", help='float: Distance, miles'
-    )
-    args.add_argument(
-        '-t', "--time", help='strtime: RunTime, hh:mm:ss'
-    )
-    args.add_argument(
-        '-s', "--space", help="str: Park"
-    )
-    args.add_argument(
-        '-T', "--temperature", default=DEFUALT_PARK_TEMP,
-        help="int: Temperature on the day"
-    )
-    args.add_argument(
-        '-A', "--age", help='int: Age of Athlete, years'
-    )
-    args.add_argument(
-        '-P', "--pace", help='str: Pace of athlete, "mm:ss" min/mile'
-    )
-    args.add_argument(
-        '-H', "--height", help='float: Height of Athlete, metres'
-    )
-    args.add_argument(
-        '-W', "--weight", help='float: Weight of Athlete, kg'
-    )
-    args.add_argument(
-        '-L', "--resting-hr", help='int: Resting HeartRate of Athlete, bpm'
-    )
-    args.add_argument(
-        '-M', "--max-hr", help='int: Max HeartRate of Athlete, bpm'
-    )
-    args.add_argument(
-        '-C', "--covid-feedback", action='store_true',
-        help='flag: Provide COVID Recovery Feedback'
-    )
-    args.add_argument(
-        '-m', "--minimal-pdata", action='store_true',
-        help='flag: Provide minimal personal data'
+        "-m",
+        "--minimal-pdata",
+        action="store_true",
+        help="flag: Provide minimal personal data",
     )
     inputs = args.parse_args()
     return inputs
 
+
 def validate_inputs(inputs):
-    print('\nInput validation:')
+    print("\nInput validation:")
     input_format_err_msg = "invalid format: details, see --help/-h"
     if inputs.time:
         err_msg_t = f"--time, -t: {input_format_err_msg}"
-        assert ':' in inputs.time, err_msg_t
+        assert ":" in inputs.time, err_msg_t
     pprint(inputs)
+
 
 def parse_pr_name(inputs_name):
     # parse ParkRunner Name: 'First Middle SurName'
     # 'Edmund M Bishanga': 'Edmund', 'M', 'BISHANGA'
     # 'Bishanga': '', '', Bishanga
     # 'John Taylor': 'John', '', 'Taylor'
-    pr_names = inputs_name.split(' ')
+    pr_names = inputs_name.split(" ")
     surName = pr_names[-1]
-    firstName = pr_names[0] if len(pr_names) > 1 else ''
-    middleName = pr_names[-2] if len(pr_names) > 2 else ''
+    firstName = pr_names[0] if len(pr_names) > 1 else ""
+    middleName = pr_names[-2] if len(pr_names) > 2 else ""
     return (firstName, middleName, surName)
+
 
 def augment_parkrunner_db_details(pr_details, inputs, using_csv):
     if inputs.space:
-        pr_details['todaysParkRun'] = inputs.space
-    if not pr_details.get('todaysParkRun'):
-        pr_details['todaysParkRun'] = pr_details.get('homeParkRun')
+        pr_details["todaysParkRun"] = inputs.space
+    if not pr_details.get("todaysParkRun"):
+        pr_details["todaysParkRun"] = pr_details.get("homeParkRun")
 
     if inputs.name:
         firstName, middleName, surName = parse_pr_name(inputs.name)
-        pr_details['firstName'] = firstName
-        pr_details['middleName'] = middleName
-        pr_details['surName'] = surName
+        pr_details["firstName"] = firstName
+        pr_details["middleName"] = middleName
+        pr_details["surName"] = surName
 
-    if pr_details.get('dateOfBirth_yyyy-mm-dd'):
-        pr_details_dob = pr_details.get('dateOfBirth_yyyy-mm-dd')
+    if pr_details.get("dateOfBirth_yyyy-mm-dd"):
+        pr_details_dob = pr_details.get("dateOfBirth_yyyy-mm-dd")
         birthDate = datetime.strptime(pr_details_dob, "%Y-%m-%d")
         age = relativedelta(datetime.today(), birthDate).years
-        pr_details['age'] = age
+        pr_details["age"] = age
 
     if using_csv:
-        pr_details['prBMIDetails'] = {
-            'height_m': float(pr_details.get('height_m')),
-            'weight_kg': float(pr_details.get('weight_kg'))
+        pr_details["prBMIDetails"] = {
+            "height_m": float(pr_details.get("height_m")),
+            "weight_kg": float(pr_details.get("weight_kg")),
         }
-        pr_details['prVO2MaxDetails'] = {
-            "resting_hr_bpm" : int(pr_details.get('resting_hr_bpm')),
-            "max_hr_bpm" : int(pr_details.get('max_hr_bpm')),
-            "age" : int(pr_details.get('age'))
+        pr_details["prVO2MaxDetails"] = {
+            "resting_hr_bpm": int(pr_details.get("resting_hr_bpm")),
+            "max_hr_bpm": int(pr_details.get("max_hr_bpm")),
+            "age": int(pr_details.get("age")),
         }
-    this_method = 'fn::augment_parkrunner_db_details'
-    print(f'\nDEBUG: {this_method}: pr_details after: \n{pr_details}')
+    this_method = "fn::augment_parkrunner_db_details"
+    print(f"\nDEBUG: {this_method}: pr_details after: \n{pr_details}")
     return pr_details
 
+
 def get_parkrunner_db_details(inputs):
-    pr_details = dict()
+    pr_details = {}
 
     using_csv = bool(CSV_DATASTORE and inputs.parkrunner_id)
-    print(f'\nDEBUG: using_csv: {using_csv}')
+    print(f"\nDEBUG: using_csv: {using_csv}")
 
     if not inputs.parkrunner_id:
         pr_details = DEFAULT_PARK_RUNNER
     elif using_csv:
         # read an appropriate row/JSON from the parkrunners_db/CSV datastore
-        with open(CSV_DATASTORE, newline='', encoding=DEF_ENCODING) as csvfile:
+        with open(CSV_DATASTORE, newline="", encoding=DEF_ENCODING) as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                if row.get('parkrunner_id') == inputs.parkrunner_id:
+                if row.get("parkrunner_id") == inputs.parkrunner_id:
                     pr_details = row
     else:
         # or read from individual parkrunner JSON file
         pr_id = inputs.parkrunner_id
-        pr_json_file = f'{DEFAULT_DATA_DIR}/parkrunner_db_details_{pr_id}.json'
-        with open(pr_json_file, 'r', encoding=DEF_ENCODING) as fileObj:
+        pr_json_file = f"{DEFAULT_DATA_DIR}/parkrunner_db_details_{pr_id}.json"
+        with open(pr_json_file, "r", encoding=DEF_ENCODING) as fileObj:
             pr_details = json.load(fileObj)
-    this_method = 'fn::get_parkrunner_db_details'
-    print(f'\nDEBUG: {this_method}: pr_details before: \n{pr_details}')
+    this_method = "fn::get_parkrunner_db_details"
+    print(f"\nDEBUG: {this_method}: pr_details before: \n{pr_details}")
 
     # Augment parkRunner Data/Info
     pr_details = augment_parkrunner_db_details(pr_details, inputs, using_csv)
     return pr_details
 
+
 def update_runner_details(inputs, pr_details):
-    parkrunner_name = pr_details.get('surName')
+    parkrunner_name = pr_details.get("surName")
     if inputs.age or inputs.weight:
         err_msg = """
             For BMI, VO2_max analysis, please provide ALL:
@@ -189,30 +174,34 @@ def update_runner_details(inputs, pr_details):
         max_hr = inputs.max_hr
         assert inputs.height and inputs.weight and rest_hr and max_hr, err_msg
         Runner = ParkRunner(
-                    parkrunner_name, age=int(inputs.age),
-                    height=float(inputs.height),
-                    weight=float(inputs.weight),
-                    resting_hr=int(inputs.resting_hr),
-                    max_hr=int(inputs.max_hr)
-                )    # pylint: disable=no-value-for-parameter
+            parkrunner_name,
+            age=int(inputs.age),
+            height=float(inputs.height),
+            weight=float(inputs.weight),
+            resting_hr=int(inputs.resting_hr),
+            max_hr=int(inputs.max_hr),
+        )  # pylint: disable=no-value-for-parameter
     else:
         # get parkrunner details as dictionary, from appropriate JSON dataStore
         Runner = ParkRunner(parkrunner_name, parkrunner_db_details=pr_details)
     return Runner
 
+
 def output_park_summary(Space):
     # logging experiment
     # message tags: info, warning, debug, error
     import logging  # pylint: disable=import-outside-toplevel
-    meb_df = '%a/%d.%b.%Y %H:%M:%S'
-    logging.basicConfig(format='%(asctime)s: %(message)s', datefmt=meb_df)
-    logging.info('event ABC: var_name: %s was logged.', Space.venue)
-    logging.warning('Park: Venue: %s', Space.venue)
-    logging.debug('Park: Venue: %s', Space.venue)
 
-    print(f'\nPark: Venue: {Space.venue}')
-    print(f'Park: Surface: {Space.surface}')
-    print(f'Park: Temp: {Space.get_temperature()} degCelcius')
+    meb_df = "%a/%d.%b.%Y %H:%M:%S"
+    logging.basicConfig(format="%(asctime)s: %(message)s", datefmt=meb_df)
+    logging.info("event ABC: var_name: %s was logged.", Space.venue)
+    logging.warning("Park: Venue: %s", Space.venue)
+    logging.debug("Park: Venue: %s", Space.venue)
+
+    print(f"\nPark: Venue: {Space.venue}")
+    print(f"Park: Surface: {Space.surface}")
+    print(f"Park: Temp: {Space.get_temperature()} degCelcius")
+
 
 def output_covid_vo2max_progress(pr_name, era, normalised_v02_pdiff):
     weekly_diff_str = f"{era} Effort: vs PreCOVID V02_max_potential"
@@ -225,13 +214,25 @@ def output_covid_vo2max_progress(pr_name, era, normalised_v02_pdiff):
         v02max_progress = orange_v02_str
     print(f"{pr_name}: {weekly_diff_str}: {v02max_progress}")
 
+
 def output_runners_covid_feedback(pr_details, Runner, Race, pr_name, era):
     four_wk_str = "Last 4 Weeks' Average ParkRun5kTime: in hh:mm:ss"
     print(f"{pr_name}: {four_wk_str}: {pr_details.get('parkrun_last4wks')}")
-    progressed_5k_pdiff = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_4wks_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
+    progressed_5k_pdiff = round(
+        100
+        * (
+            1
+            - (
+                (Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_4wks_seconds())
+                / Runner.get_pr_parkrun_sb_seconds()
+            )
+        )
+        - 100,
+        1,
+    )
     s_progressed_5k_pdiff = str(progressed_5k_pdiff)
     if int(progressed_5k_pdiff) > 0:
-        s_progressed_5k_pdiff = '+' + str(progressed_5k_pdiff)
+        s_progressed_5k_pdiff = "+" + str(progressed_5k_pdiff)
     four_wk_diff_str = f"{era} Effort: vs Last 4 Weeks' Average: "
     print(f"{pr_name}: {four_wk_diff_str}: pcentDiff: {s_progressed_5k_pdiff}%")
 
@@ -243,15 +244,16 @@ def output_runners_covid_feedback(pr_details, Runner, Race, pr_name, era):
         progress = red_warning_str
     print(f"{pr_name}: {four_wk_diff_str}: Verdict: {progress}\n")
 
+
 def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
     pr_name = Runner.name
     vo2max_potential = Runner.get_vo2max_potential()
     print(f"\n{pr_name}: Ref: VO2max_potential: {vo2max_potential}")
-    pr_sb = pr_details.get('parkrun_sb')
+    pr_sb = pr_details.get("parkrun_sb")
     print(f"{pr_name}: Ref: Season's Best ParkRunTime: in hh:mm:ss {pr_sb}")
     if not inputs.minimal_pdata:
         print(f"{pr_name}: Ref: pBMI: {Runner.get_bmi()}")
-    ref_str = 'PreCOVID' if inputs.covid_feedback else 'Ref'
+    ref_str = "PreCOVID" if inputs.covid_feedback else "Ref"
     if not inputs.minimal_pdata:
         print(f"{pr_name}: {ref_str}: BMI: {Runner.get_trefethen_bmi()}")
 
@@ -279,10 +281,21 @@ def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
     if inputs.covid_feedback:
         output_covid_vo2max_progress(pr_name, era, normalised_v02_pdiff)
 
-    normalised_5k_effort = round(100 * (1 - ((Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_sb_seconds()) / Runner.get_pr_parkrun_sb_seconds())) - 100, 1)
+    normalised_5k_effort = round(
+        100
+        * (
+            1
+            - (
+                (Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_sb_seconds())
+                / Runner.get_pr_parkrun_sb_seconds()
+            )
+        )
+        - 100,
+        1,
+    )
     normalised_5k_effort = str(normalised_5k_effort)
     if float(normalised_5k_effort) > 0:
-        normalised_5k_effort = '+' + str(normalised_5k_effort)
+        normalised_5k_effort = "+" + str(normalised_5k_effort)
     season_diff_str = f"{era} Effort: vs Season's Best"
     print(f"{pr_name}: {season_diff_str}: {normalised_5k_effort}%\n")
 
@@ -290,9 +303,8 @@ def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
         output_runners_covid_feedback(pr_details, Runner, Race, pr_name, era)
 
 
-
 def main():
-    """ Interactive: takes event details, gives normalised insights. """
+    """Interactive: takes event details, gives normalised insights."""
     # Example input format
     # python3 ./TodaysParkRun.py -n "Bishanga, EM"
     #                            -t 00:18:18 -d 3.1 -s "PocketPark"
@@ -304,23 +316,29 @@ def main():
 
     # Prioritize ParkRunner JSON/Dictionary whenever available
     pr_details = get_parkrunner_db_details(inputs)
-    assert pr_details, 'pr_details: Missing parkRunner Details: see --help/-h'
+    assert pr_details, "pr_details: Missing parkRunner Details: see --help/-h"
 
     # process ParkRun details
-    park_name = pr_details.get('todaysParkRun')
+    park_name = pr_details.get("todaysParkRun")
     Space = Park(
-        park_name, temperature=inputs.temperature,
-        precipitation=2, surface="mixed", inclination=2
+        park_name,
+        temperature=inputs.temperature,
+        precipitation=2,
+        surface="mixed",
+        inclination=2,
     )
     output_park_summary(Space)
 
     Runner = update_runner_details(inputs, pr_details)
     Race = ParkRun(
-        park=Space, runner=Runner, dist_miles=inputs.distance,
-        run_timestr=inputs.time, pace=inputs.pace
+        park=Space,
+        runner=Runner,
+        dist_miles=inputs.distance,
+        run_timestr=inputs.time,
+        pace=inputs.pace,
     )
     output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
