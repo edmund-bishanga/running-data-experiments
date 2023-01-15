@@ -173,7 +173,7 @@ def update_runner_details(inputs, pr_details):
         rest_hr = inputs.resting_hr
         max_hr = inputs.max_hr
         assert inputs.height and inputs.weight and rest_hr and max_hr, err_msg
-        Runner = ParkRunner(
+        runner = ParkRunner(
             parkrunner_name,
             age=int(inputs.age),
             height=float(inputs.height),
@@ -183,24 +183,24 @@ def update_runner_details(inputs, pr_details):
         )  # pylint: disable=no-value-for-parameter
     else:
         # get parkrunner details as dictionary, from appropriate JSON dataStore
-        Runner = ParkRunner(parkrunner_name, parkrunner_db_details=pr_details)
-    return Runner
+        runner = ParkRunner(parkrunner_name, parkrunner_db_details=pr_details)
+    return runner
 
 
-def output_park_summary(Space):
+def output_park_summary(space):
     # logging experiment
     # message tags: info, warning, debug, error
     import logging  # pylint: disable=import-outside-toplevel
 
     meb_df = "%a/%d.%b.%Y %H:%M:%S"
     logging.basicConfig(format="%(asctime)s: %(message)s", datefmt=meb_df)
-    logging.info("event ABC: var_name: %s was logged.", Space.venue)
-    logging.warning("Park: Venue: %s", Space.venue)
-    logging.debug("Park: Venue: %s", Space.venue)
+    logging.info("event ABC: var_name: %s was logged.", space.venue)
+    logging.warning("Park: Venue: %s", space.venue)
+    logging.debug("Park: Venue: %s", space.venue)
 
-    print(f"\nPark: Venue: {Space.venue}")
-    print(f"Park: Surface: {Space.surface}")
-    print(f"Park: Temp: {Space.get_temperature()} degCelcius")
+    print(f"\nPark: Venue: {space.venue}")
+    print(f"Park: Surface: {space.surface}")
+    print(f"Park: Temp: {space.get_temperature()} degCelcius")
 
 
 def output_covid_vo2max_progress(pr_name, era, normalised_v02_pdiff):
@@ -215,7 +215,7 @@ def output_covid_vo2max_progress(pr_name, era, normalised_v02_pdiff):
     print(f"{pr_name}: {weekly_diff_str}: {v02max_progress}")
 
 
-def output_runners_covid_feedback(pr_details, Runner, Race, pr_name, era):
+def output_runners_covid_feedback(pr_details, runner, race, pr_name, era):
     four_wk_str = "Last 4 Weeks' Average ParkRun5kTime: in hh:mm:ss"
     print(f"{pr_name}: {four_wk_str}: {pr_details.get('parkrun_last4wks')}")
     progressed_5k_pdiff = round(
@@ -223,8 +223,8 @@ def output_runners_covid_feedback(pr_details, Runner, Race, pr_name, era):
         * (
             1
             - (
-                (Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_4wks_seconds())
-                / Runner.get_pr_parkrun_sb_seconds()
+                (race.get_t_parkrun_seconds() - runner.get_pr_parkrun_4wks_seconds())
+                / runner.get_pr_parkrun_sb_seconds()
             )
         )
         - 100,
@@ -245,34 +245,34 @@ def output_runners_covid_feedback(pr_details, Runner, Race, pr_name, era):
     print(f"{pr_name}: {four_wk_diff_str}: Verdict: {progress}\n")
 
 
-def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
-    pr_name = Runner.name
-    vo2max_potential = Runner.get_vo2max_potential()
+def output_todays_key_parkrunner_stats(inputs, pr_details, runner, race):
+    pr_name = runner.name
+    vo2max_potential = runner.get_vo2max_potential()
     print(f"\n{pr_name}: Ref: VO2max_potential: {vo2max_potential}")
     pr_sb = pr_details.get("parkrun_sb")
     print(f"{pr_name}: Ref: Season's Best ParkRunTime: in hh:mm:ss {pr_sb}")
     if not inputs.minimal_pdata:
-        print(f"{pr_name}: Ref: pBMI: {Runner.get_bmi()}")
+        print(f"{pr_name}: Ref: pBMI: {runner.get_bmi()}")
     ref_str = "PreCOVID" if inputs.covid_feedback else "Ref"
     if not inputs.minimal_pdata:
-        print(f"{pr_name}: {ref_str}: BMI: {Runner.get_trefethen_bmi()}")
+        print(f"{pr_name}: {ref_str}: BMI: {runner.get_trefethen_bmi()}")
 
-    dist_run_today = Race.get_dist_miles()
+    dist_run_today = race.get_dist_miles()
     if inputs.distance:
         dist_run_today = inputs.distance
     print(f"\n{pr_name}: Distance Run Today: in miles {dist_run_today}")
-    r_time = Race.get_time_sec()
-    run_time_tday = Race.convert_seconds_to_timestr_hh_mm_ss(r_time)
+    r_time = race.get_time_sec()
+    run_time_tday = race.convert_seconds_to_timestr_hh_mm_ss(r_time)
     if inputs.time:
         run_time_tday = inputs.time
     era = "Today's"
     print(f"{pr_name}: {era} Effort: RunTime: (hh:mm:ss) {run_time_tday}")
-    race_pace_tday = Race.get_race_pace_str()
+    race_pace_tday = race.get_race_pace_str()
     print(f"{pr_name}: {era} Estimated Pace: {race_pace_tday} min/mile")
-    eq_5k_time = Race.get_t_parkrun_timestr()
+    eq_5k_time = race.get_t_parkrun_timestr()
     print(f"{pr_name}: {era} Equivalent ParkRun5kTime: (hh:mm:ss) {eq_5k_time}")
 
-    current_vo2max = Race.get_vo2max_current()
+    current_vo2max = race.get_vo2max_current()
     print(f"\n{pr_name}: Estimated V02max_current: {era}: {current_vo2max}")
 
     pcent_vo2max = round(100 * (current_vo2max / vo2max_potential), 1)
@@ -286,8 +286,8 @@ def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
         * (
             1
             - (
-                (Race.get_t_parkrun_seconds() - Runner.get_pr_parkrun_sb_seconds())
-                / Runner.get_pr_parkrun_sb_seconds()
+                (race.get_t_parkrun_seconds() - runner.get_pr_parkrun_sb_seconds())
+                / runner.get_pr_parkrun_sb_seconds()
             )
         )
         - 100,
@@ -300,7 +300,7 @@ def output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race):
     print(f"{pr_name}: {season_diff_str}: {normalised_5k_effort}%\n")
 
     if inputs.covid_feedback:
-        output_runners_covid_feedback(pr_details, Runner, Race, pr_name, era)
+        output_runners_covid_feedback(pr_details, runner, race, pr_name, era)
 
 
 def main():
@@ -320,24 +320,24 @@ def main():
 
     # process ParkRun details
     park_name = pr_details.get("todaysParkRun")
-    Space = Park(
+    space = Park(
         park_name,
         temperature=inputs.temperature,
         precipitation=2,
         surface="mixed",
         inclination=2,
     )
-    output_park_summary(Space)
+    output_park_summary(space)
 
-    Runner = update_runner_details(inputs, pr_details)
-    Race = ParkRun(
-        park=Space,
-        runner=Runner,
+    runner = update_runner_details(inputs, pr_details)
+    race = ParkRun(
+        park=space,
+        runner=runner,
         dist_miles=inputs.distance,
         run_timestr=inputs.time,
         pace=inputs.pace,
     )
-    output_todays_key_parkrunner_stats(inputs, pr_details, Runner, Race)
+    output_todays_key_parkrunner_stats(inputs, pr_details, runner, race)
 
 
 if __name__ == "__main__":
