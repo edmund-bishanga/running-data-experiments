@@ -45,7 +45,10 @@ DEFAULT_PARK_RUNNER = {
 def parse_inputs():
     args = argparse.ArgumentParser()
     args.add_argument("-p", "--parkrunner-id", help="str: ParkRun Number|ID")
-    args.add_argument("-n", "--name", help="str: Name of Athlete")
+    args.add_argument(
+        "-n", "--name",
+        help="str: Name of Athlete, format: 'First Middle SurName'"
+    )
     args.add_argument("-d", "--distance", help="float: Distance, miles")
     args.add_argument("-t", "--time", help="strtime: RunTime, hh:mm:ss")
     args.add_argument("-s", "--space", help="str: Park")
