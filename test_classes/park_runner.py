@@ -15,6 +15,7 @@ Body:
 # pylint: disable=invalid-name
 
 DEFAULT_PARKRUN_SB = 1050  # "00:17:30"
+VO2KEY = 'prVO2MaxDetails'
 
 class ParkRunner():
     """ The Athlete: key attributes and methods. """
@@ -37,7 +38,7 @@ class ParkRunner():
         self.vo2max_potential = None
         self.t_parkrun_sb_seconds = DEFAULT_PARKRUN_SB
         self.t_parkrun_4wks_seconds = None
-        self.parkrunner_db_details = parkrunner_db_details
+        self.pr_db = parkrunner_db_details
 
     # PARKRUNNER: METHODS: Add on need-to-add basis.
 
@@ -67,23 +68,23 @@ class ParkRunner():
 
     # Use parkrunner details dictionary, to calculate bmi & v02max_potential
     def get_pr_max_hr(self):
-        if self.parkrunner_db_details:
-            self.max_hr = self.parkrunner_db_details.get('prVO2MaxDetails').get('max_hr_bpm')
+        if self.pr_db:
+            self.max_hr = self.pr_db.get(VO2KEY).get('max_hr_bpm')
         return self.max_hr
 
     def get_pr_resting_hr(self):
-        if self.parkrunner_db_details:
-            self.resting_hr = self.parkrunner_db_details.get('prVO2MaxDetails').get('resting_hr_bpm')
+        if self.pr_db:
+            self.resting_hr = self.pr_db.get(VO2KEY).get('resting_hr_bpm')
         return self.resting_hr
 
     def get_pr_weight(self):
-        if self.parkrunner_db_details:
-            self.pr_weight = self.parkrunner_db_details.get('prBMIDetails').get('weight_kg')
+        if self.pr_db:
+            self.pr_weight = self.pr_db.get('prBMIDetails').get('weight_kg')
         return self.pr_weight
 
     def get_pr_height(self):
-        if self.parkrunner_db_details:
-            self.pr_height = self.parkrunner_db_details.get('prBMIDetails').get('height_m')
+        if self.pr_db:
+            self.pr_height = self.pr_db.get('prBMIDetails').get('height_m')
         return self.pr_height
 
     # Other Functions
@@ -92,20 +93,23 @@ class ParkRunner():
         """ convert hh:mm:ss into seconds """
         t_array = time_str.strip().split(':')
         if len(t_array) != 3:
-            assert "invalid time_str: {}".format(time_str)
-        race_time_seconds = 60 * 60 * int(t_array[0]) + 60 * int(t_array[1]) + int(t_array[2])
+            assert f"invalid time_str: {time_str}"
+        hrs = int(t_array[0])
+        mins = int(t_array[1])
+        seconds = int(t_array[2])
+        race_time_seconds = (60 * 60 * hrs) + (60 * mins) + seconds
         return race_time_seconds
 
     def get_pr_parkrun_sb_seconds(self):
-        if self.parkrunner_db_details:
+        if self.pr_db:
             self.t_parkrun_sb_seconds = self.parse_race_timestr_to_seconds(
-                self.parkrunner_db_details.get('parkrun_sb')
+                self.pr_db.get('parkrun_sb')
             )
         return self.t_parkrun_sb_seconds
 
     def get_pr_parkrun_4wks_seconds(self):
-        if self.parkrunner_db_details:
+        if self.pr_db:
             self.t_parkrun_4wks_seconds = self.parse_race_timestr_to_seconds(
-                self.parkrunner_db_details.get('parkrun_last4wks')
+                self.pr_db.get('parkrun_last4wks')
             )
         return self.t_parkrun_4wks_seconds
