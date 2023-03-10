@@ -22,7 +22,7 @@ def validate_args_cmd(cmd):
     err_msg = f'invalid args_cmd: {cmd}'
     assert 'python ' in cmd, err_msg
 
-    reg_str = r"\w+ .\/Today"
+    reg_str = r'\w+ .\/Today'
     matched = re.search(reg_str, cmd)
     print('\nDEBUG: matched'); pprint(matched)
     reg_err_msg = f'invalid args_cmd format: expected regex: {reg_str} actual: {cmd}'
@@ -35,7 +35,7 @@ def run_args_check(relevant_inputs):
         # form args cmd
         args_cmd = 'python ./TodaysParkRun.py '
         args_cmd_suffix = relevant_inputs[key][1]
-        args_cmd = args_cmd + " ".join(args_cmd_suffix)
+        args_cmd = args_cmd + ' '.join(args_cmd_suffix)
         print(f'args_cmd: "{args_cmd}"')
 
         validate_args_cmd(args_cmd)
@@ -50,23 +50,23 @@ def run_args_check(relevant_inputs):
 
         # verify outcome
         outcome = 'FAIL'
-        if response["status_code"] == 200:
+        if response['status_code'] == 200:
             outcome = 'PASS'
         outputs[key].append(outcome)
-        assert outcome == relevant_inputs[key][-1], f"unexpected result: {key}"
+        assert outcome == relevant_inputs[key][-1], f'unexpected result: {key}'
     print('\nDEBUG: outputs'); pprint(outputs)
     return outputs
 
 
 def verify_args_names(inputs_json_file):
     # read json input
-    with open(inputs_json_file, 'r') as inputs_file:
+    with open(inputs_json_file, 'r', encoding='utf-8') as inputs_file:
         inputs_data = json.load(inputs_file)
     print('\nDEBUG: inputs_data'); pprint(inputs_data)
 
     # get relevant test input data
     option = '-n'
-    relevant_inputs = dict()
+    relevant_inputs = {}
     for key in inputs_data:
         if option in inputs_data[key]:
             relevant_inputs[key] = inputs_data[key]
@@ -82,13 +82,13 @@ def main():
     # Input validation
     args = argparse.ArgumentParser()
     args.add_argument(
-        '-f', "--input-file",
+        '-f', '--input-file',
         default='./test_data/input_data_test_todays_park_run.json',
         help='str: path to JSON inputs file'
     )
     inputs = args.parse_args()
     print('\nInput validation:')
-    pprint(inputs)
+    pprint(inputs, width=120)
 
     # Test Data-Driven Argss
     verify_args_names(inputs.input_file)
