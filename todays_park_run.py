@@ -1,7 +1,7 @@
 #!/usr/bin/python
 """
 Interactive Script:
-+ Takes Event and Athlete Details
++ Takes ParkRun Event and Athlete Details
 + Provides a Summary of ParkRun Analysis Info
 + Normalised Insights
 """
@@ -32,8 +32,8 @@ DEFAULT_PARK_RUNNER = {
     "firstName": "Josiah",
     "dateOfBirth_yyyy-mm-dd": "1989-10-14",
     "parkrunner_id": "A1619585",
-    "homeParkRun": "PeelPark",
-    "todaysParkRun": "WorsleyWoodsPark",
+    "homeParkRunVenue": "PeelPark",
+    "todaysParkRunVenue": "WorsleyWoodsPark",
     "parkrun_last4wks": "00:32:23",
     "parkrun_sb": "00:18:30",
     "parkrun_pb": "00:17:30",
@@ -105,9 +105,9 @@ def parse_pr_name(inputs_name):
 
 def augment_parkrunner_db_details(pr_details, inputs, using_csv):
     if inputs.space:
-        pr_details["todaysParkRun"] = inputs.space
-    if not pr_details.get("todaysParkRun"):
-        pr_details["todaysParkRun"] = pr_details.get("homeParkRun")
+        pr_details["todaysParkRunVenue"] = inputs.space
+    if not pr_details.get("todaysParkRunVenue"):
+        pr_details["todaysParkRunVenue"] = pr_details.get("homeParkRunVenue")
 
     if inputs.name:
         firstName, middleName, surName = parse_pr_name(inputs.name)
@@ -120,6 +120,8 @@ def augment_parkrunner_db_details(pr_details, inputs, using_csv):
         birthDate = datetime.strptime(pr_details_dob, "%Y-%m-%d")
         age = relativedelta(datetime.today(), birthDate).years
         pr_details["age"] = age
+        if pr_details.get("prVO2MaxDetails"):
+            pr_details["prVO2MaxDetails"]["age"] = pr_details["age"]
 
     if using_csv:
         pr_details["prBMIDetails"] = {
@@ -322,7 +324,7 @@ def main():
     assert pr_details, "pr_details: Missing parkRunner Details: see --help/-h"
 
     # process ParkRun details
-    park_name = pr_details.get("todaysParkRun")
+    park_name = pr_details.get("todaysParkRunVenue")
     space = Park(
         park_name,
         temperature=inputs.temperature,

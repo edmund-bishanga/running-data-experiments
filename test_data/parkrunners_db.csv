@@ -1,4 +1,4 @@
-parkrunner_id,surName,firstName,middleName,dateOfBirth_yyyy-mm-dd,homeParkRun,todaysParkRun,parkrun_pb,parkrun_sb,parkrun_last4wks,resting_hr_bpm,max_hr_bpm,height_m,weight_kg
+parkrunner_id,surName,firstName,middleName,dateOfBirth_yyyy-mm-dd,homeParkRunVenue,todaysParkRunVenue,parkrun_pb,parkrun_sb,parkrun_last4wks,resting_hr_bpm,max_hr_bpm,height_m,weight_kg
 A1618583,PAISLEY,Paula,E,1961-07-23,PeelParkSALFORD,PeelParkSALFORD,00:19:23,00:25:07,00:32:23,55,150,1.63,72.3
 A1618582,SMITH,Joshua,M,1979-07-23,PocketParkEYNESBURY,PocketParkEYNESBURY,00:18:23,00:20:07,00:22:23,50,180,1.73,75.1
 A1618581,CHAN,Ruth,D,1991-07-09,HinchingbrookeParkHUNTINGDON,HinchingbrookeParkHUNTINGDON,00:17:23,00:19:07,00:21:23,45,190,1.60,63.5
