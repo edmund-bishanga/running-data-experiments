@@ -96,11 +96,18 @@ def parse_pr_name(inputs_name):
     # 'Edmund M Bishanga': 'Edmund', 'M', 'BISHANGA'
     # 'Bishanga': '', '', Bishanga
     # 'John Taylor': 'John', '', 'Taylor'
-    pr_names = inputs_name.split(" ")
-    surName = pr_names[-1]
-    firstName = pr_names[0] if len(pr_names) > 1 else ""
-    middleName = pr_names[-2] if len(pr_names) > 2 else ""
-    return (firstName, middleName, surName)
+    if "," in inputs_name:
+        pr_names = inputs_name.split(",")
+        sur_name = pr_names[0]
+        rem_names = pr_names[-1].strip().split(" ")
+        first_name = rem_names[0]
+        mid_name = rem_names[-1] if len(rem_names) > 1 else ""
+    else:
+        pr_names = inputs_name.split(" ")
+        sur_name = pr_names[-1]
+        first_name = pr_names[0] if len(pr_names) > 1 else ""
+        mid_name = pr_names[-2] if len(pr_names) > 2 else ""
+    return (first_name, mid_name, sur_name)
 
 
 def augment_parkrunner_db_details(pr_details, inputs, using_csv):
@@ -110,10 +117,10 @@ def augment_parkrunner_db_details(pr_details, inputs, using_csv):
         pr_details["todaysParkRunVenue"] = pr_details.get("homeParkRunVenue")
 
     if inputs.name:
-        firstName, middleName, surName = parse_pr_name(inputs.name)
-        pr_details["firstName"] = firstName
-        pr_details["middleName"] = middleName
-        pr_details["surName"] = surName
+        first_name, mid_name, sur_name = parse_pr_name(inputs.name)
+        pr_details["firstName"] = first_name
+        pr_details["middleName"] = mid_name
+        pr_details["surName"] = sur_name
 
     if pr_details.get("dateOfBirth_yyyy-mm-dd"):
         pr_details_dob = pr_details.get("dateOfBirth_yyyy-mm-dd")
