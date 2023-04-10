@@ -21,8 +21,9 @@ from pprint import pprint
 import numpy
 import pandas as pd
 import pylab
-import matplotlib.pyplot as pyplot
-import scipy.stats as stats
+
+from matplotlib import pyplot
+from scipy import stats
 
 from test_classes.park_runner import ParkRunner
 
@@ -31,7 +32,7 @@ from test_classes.park_runner import ParkRunner
 #    Possible formats: .csv, .txt
 #    Parsing Data
 #    into Appropriate Data Structure e.g. Dictionaries, Named Tuples, Lists etc.
-runfile = "./test_data/half_marathon_bishanga_edmund.csv"
+runfile = './test_data/half_marathon_bishanga_edmund.csv'
 
 def get_file_contents(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
@@ -45,7 +46,7 @@ def get_file_contents(filepath):
 
 # generator experiment: big data .csv processing
 def collect_buffered_raw_data(unltd_raw_data_gen, max_length):
-    ltd_raw_data = list()
+    ltd_raw_data = []
     try:
         # get next raw data val, until buffer limit
         while len(ltd_raw_data) < max_length:
@@ -59,6 +60,10 @@ def collect_buffered_raw_data(unltd_raw_data_gen, max_length):
     return (ltd_raw_data, length_raw_data)
 
 def get_csv_column_raw_data(csv_file, heading, max_length=100):
+    # TODO: resolve pylint warning: R1732: consider-using-with
+    # with open(csv_file, 'r', encoding='utf-8') as fcsv:
+    #     rows = (line for line in fcsv)
+    # row_items = (row.rstrip().split(',') for row in rows)
     rows = (line for line in open(csv_file, 'r', encoding='utf-8'))
     row_items = (row.rstrip().split(',') for row in rows)
 
@@ -122,10 +127,10 @@ def main():
 
     # 2: A: parse data -> appropriate data structure
     if not rundata:
-        print(f"{parkrun_csv_file}: seems empty or its data inaccessible")
+        print(f'{parkrun_csv_file}: seems empty or its data inaccessible')
         sys.exit(1)
-    units = dict()
-    labels = list()
+    units = {}
+    labels = []
     for header in rundata.pop(0).strip('\n').split(','):
         if header:
             label = header.split(' ')[0]
@@ -134,7 +139,7 @@ def main():
                 unit = header.split(' ')[1].strip('(').strip(')')
             units.update({label:unit})
             labels.append(label)
-    rows = list()
+    rows = []
     iter_rundata = iter(rundata)
     done = False
     while not done:
@@ -149,8 +154,8 @@ def main():
                 rows.append(lrow)
 
     # 2: B: Calculate basic running Stats
-    y_values = list()
-    x_values = list()
+    y_values = []
+    x_values = []
     event_name = 'ParkRun'
     event_x_axis = 'date'
     event_y_axis = 'time'
