@@ -85,9 +85,34 @@ def parse_inputs():
 def validate_inputs(inputs):
     print("\nInput validation:")
     input_format_err_msg = "invalid format: details, see --help/-h"
+    # TODO: Add a simple but reasonable input validation check, for each input
+    # List of Inputs
+    # [-p PARKRUNNER_ID]
+    # [-n NAME]
+    # [-d DISTANCE]
+    # [-t TIME]
+    # [-s SPACE]
+    # [-T TEMPERATURE]
+    # [-A AGE]
+    # [-P PACE]
+    # [-H HEIGHT]
+    # [-W WEIGHT]
+    # [-L RESTING_HR]
+    # [-M MAX_HR]
+    # [-C]
+    # [-m]
     if inputs.time:
         err_msg_t = f"--time, -t: {input_format_err_msg}"
         assert ":" in inputs.time, err_msg_t
+    if inputs.distance:
+        err_msg_d = f"--distance, -d: {input_format_err_msg}"
+        assert isinstance(float(inputs.distance), float), err_msg_d
+    if inputs.resting_hr:
+        min_rhr = 20
+        max_rhr = 100
+        input_var = "--resting-hr, -L"
+        err_msg_hr = f"{input_var}: should be between {min_rhr} and {max_rhr}"
+        assert min_rhr < int(inputs.resting_hr) < max_rhr, err_msg_hr
     pprint(inputs)
 
 
