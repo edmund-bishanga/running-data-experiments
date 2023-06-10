@@ -1,9 +1,19 @@
 #!/usr/bin/python
 """
-Interactive Script:
+Purpose:
+Post-ParkRun Data Processing:
 + Takes ParkRun Event and Athlete Details
 + Provides a Summary of ParkRun Analysis Info
 + Normalised Insights
+
+Example input format:
+python3 ./todays_park_run.py -n "Bishanga, EM"
+                             -t 00:18:18 -d 3.1 -s "PocketPark"
+python3 ./todays_park_run.py --name "Bishanga, EM"
+                             --time 00:18:18 --distance 3.1
+                             --space "PocketPark"
+For more detail:
+python3 ./todays_park_run.py --help
 """
 
 # pylint: disable=line-too-long
@@ -59,13 +69,21 @@ def parse_inputs():
         help="int: Temperature on the day",
     )
     args.add_argument("-A", "--age", help="int: Age of Athlete, years")
-    args.add_argument("-P", "--pace", help='str: Pace of athlete, "mm:ss" min/mile')
+    args.add_argument(
+        "-P",
+        "--pace",
+        help='str: Pace of athlete, "mm:ss" min/mile'
+    )
     args.add_argument("-H", "--height", help="float: Height of Athlete, metres")
     args.add_argument("-W", "--weight", help="float: Weight of Athlete, kg")
     args.add_argument(
         "-L", "--resting-hr", help="int: Resting HeartRate of Athlete, bpm"
     )
-    args.add_argument("-M", "--max-hr", help="int: Max HeartRate of Athlete, bpm")
+    args.add_argument(
+        "-M",
+        "--max-hr",
+        help="int: Max HeartRate of Athlete, bpm"
+    )
     args.add_argument(
         "-C",
         "--covid-feedback",
@@ -342,20 +360,13 @@ def output_todays_key_parkrunner_stats(inputs, pr_details, runner, race):
 
 def main():
     """Interactive: takes event details, gives normalised insights."""
-    # Example input format
-    # python3 ./TodaysParkRun.py -n "Bishanga, EM"
-    #                            -t 00:18:18 -d 3.1 -s "PocketPark"
-    # python3 ./TodaysParkRun.py --name "Bishanga, EM"
-    #                            --time 00:18:18 --distance 3.1
-    #                            --space "PocketPark"
     inputs = parse_inputs()
     validate_inputs(inputs)
-
     # Prioritize ParkRunner JSON/Dictionary whenever available
     pr_details = get_parkrunner_db_details(inputs)
     assert pr_details, "pr_details: Missing parkRunner Details: see --help/-h"
-
-    # process ParkRun details
+    # Process ParkRun details: Space, Time, Person
+    # A: The Park
     park_name = pr_details.get("todaysParkRunVenue")
     space = Park(
         park_name,
@@ -365,7 +376,7 @@ def main():
         inclination=2,
     )
     output_park_summary(space)
-
+    # B: The Runner
     runner = update_runner_details(inputs, pr_details)
     race = ParkRun(
         park=space,
