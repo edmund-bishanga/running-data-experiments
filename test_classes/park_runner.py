@@ -55,7 +55,10 @@ class ParkRunner():
     # https://en.wikipedia.org/wiki/Body_mass_index
     def get_bmi(self):
         if not self.bmi:
-            self.bmi = round(self.get_pr_weight() / (self.get_pr_height()**2), 2)
+            self.bmi = round(
+                self.get_pr_weight() / (self.get_pr_height()**2),
+                2
+            )
         return self.bmi
 
     # https://en.wikipedia.org/wiki/Nick_Trefethen
@@ -93,7 +96,7 @@ class ParkRunner():
         """ convert hh:mm:ss into seconds """
         t_array = time_str.strip().split(':')
         if len(t_array) != 3:
-            assert f"invalid time_str: {time_str}"
+            assert f'invalid time_str: {time_str}'
         hrs = int(t_array[0])
         mins = int(t_array[1])
         seconds = int(t_array[2])

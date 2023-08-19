@@ -5,14 +5,15 @@ This Class describes The Park: Athletics Training Space
 Environmental Characteristics: Static and Dynamic
 Weather:
   + Temperature: frozen|cold|warm|hot
-  + Precipitation: snow|rain|drizzle|dry 
+  + Precipitation: snow|rain|drizzle|dry
 Terrain:
   + Surface: mud|grass|gravel|tarmac
   + Inclination: mountane|hilly|undulating|flat
 """
 
 
-class Park(object):
+class Park():
+    """ This Class describes The Park: The Athlete's Training Space. """
     # Properties:
     # + sensible defaults.
     # + can be provided by user: not static.
@@ -37,8 +38,7 @@ class Park(object):
 
 class TarRoad(Park):
     def __init__(self, venue, temperature, precipitation, surface, inclination):
-        super().__init__(venue, temperature, precipitation, surface, inclination)
+        super().__init__(
+            venue, temperature, precipitation, surface, inclination
+        )
         self.surface = 'tarmac'
-
-
-

@@ -38,7 +38,7 @@ class TestParkRunMethods(TestCase):
         self.parkrunner = ParkRunner()
         self.park = Park(
             'peel_park', temperature=10, precipitation=2,
-            surface="mixed", inclination=2
+            surface='mixed', inclination=2
         )
         self.parkrun = ParkRun(
             self.park, self.parkrunner, dist_miles=3.16,

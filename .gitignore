@@ -1,5 +1,6 @@
 # custom
 configs/env_config.json
+*backlog*
 
 # adapted from Python.gitignore Template:
 # https://github.com/github/gitignore/blob/main/Python.gitignore 

@@ -23,7 +23,7 @@ DEF_DIST_MILES = 3.16
 
 class ParkRun():
     """
-    Defines an Event/Race in the Park, by a Runner:
+    Defines an Event|Race in the Park, by a Runner:
     distance covered, time taken, info gleaned
     """
     # Properties:
@@ -91,7 +91,7 @@ class ParkRun():
         """ convert hh:mm:ss into seconds """
         t_array = time_str.strip().split(':')
         if len(t_array) != 3:
-            assert "invalid time_str: {}".format(time_str)
+            assert f'invalid time_str: {time_str}'
         race_time_seconds = 60 * 60 * int(t_array[0]) + 60 * int(t_array[1]) + int(t_array[2])
         return race_time_seconds
 
