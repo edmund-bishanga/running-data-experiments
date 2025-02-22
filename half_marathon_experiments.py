@@ -30,10 +30,13 @@ from test_classes.park_runner import ParkRunner
 class HalfMarathonExpts:
     """Statistical and Graphical Data Analysis: Half Marathon Data."""
 
-    def __init__(self, hm_runfile=None) -> None:
+    def __init__(self, hm_runfile=None, event_name=None) -> None:
         self.hm_runfile = hm_runfile
+        self.event_name = event_name
         if not self.hm_runfile:
             self.hm_runfile = "./test_data/half_marathon_bishanga_edmund.csv"
+        if not self.event_name:
+            self.event_name = "Cambridge Half Marathon"
 
     # 1. Get Run instance Data
     #    From a file, I/O input.
@@ -201,11 +204,10 @@ class HalfMarathonExpts:
         rows = self.get_data_rows(rundata)
 
         # 2. Calculate plotable Data Series
-        event_name = "Cambridge Half Marathon"
         event_x_axis = "date"
         event_y_axis = "time"
         x_values, y_values = self.calculate_plotable_coordinates(
-            rows, event_x_axis, event_y_axis, event_name
+            rows, event_x_axis, event_y_axis, self.event_name
         )
 
         # 2a: Output basic Stats summary
@@ -215,10 +217,10 @@ class HalfMarathonExpts:
         coordinates = tuple(zip(x_values, y_values))
         print("Coordinates: ")
         pprint(coordinates, width=1600)
-        self.plot_line_graph(x_values, y_values, event_name, event_x_axis, event_y_axis)
+        self.plot_line_graph(x_values, y_values, self.event_name, event_x_axis, event_y_axis)
 
         # 2c. Plot normal distribution
-        self.plot_normal_distribution(event_name, data=y_values)
+        self.plot_normal_distribution(self.event_name, data=y_values)
 
         # 3. Do Running Economy Analysis
 
@@ -226,5 +228,8 @@ class HalfMarathonExpts:
 
 
 if __name__ == "__main__":
-    hmexpt = HalfMarathonExpts()
+    hmexpt = HalfMarathonExpts(
+        hm_runfile="./test_data/park_run_raw_data_bishanga_edmund_tres.csv",
+        event_name="PocketParkRun"
+    )
     hmexpt.main()
